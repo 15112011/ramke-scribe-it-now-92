@@ -1,163 +1,121 @@
-
 import React from 'react';
 import { Star, Users, Clock, TrendingUp, Phone, MessageCircle, Instagram, CheckCircle, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Header } from '@/components/Header';
+import { AdminPanel } from '@/components/AdminPanel';
+import { AnimatedSection } from '@/components/AnimatedSection';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAdmin } from '@/contexts/AdminContext';
 
 const Index = () => {
+  const { language, t } = useLanguage();
+  const { settings } = useAdmin();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/8d1f7dd8-67c5-4ab2-8ea3-d655ef1cb613.png" 
-              alt="Omar Ashraf Logo"
-              className="w-12 h-12"
-            />
-          </div>
-          <nav className="hidden md:flex space-x-reverse space-x-6">
-            <a href="#home" className="text-gray-700 hover:text-green-600">الرئيسية</a>
-            <a href="#about" className="text-gray-700 hover:text-green-600">نبذة عني</a>
-            <a href="#packages" className="text-gray-700 hover:text-green-600">الباقات</a>
-            <a href="#contact" className="text-gray-700 hover:text-green-600">تواصل معي</a>
-          </nav>
-          <Button className="bg-green-500 hover:bg-green-600">
-            تواصل معي
-          </Button>
-        </div>
-      </header>
+      <Header />
+      
+      {/* Admin Panel */}
+      <AdminPanel />
 
       {/* Hero Section */}
-      <section id="home" className="py-20 bg-gradient-to-r from-green-50 to-green-100">
+      <section id="home" className="py-20 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center gap-12">
-            <div className="lg:w-1/2 text-center lg:text-right">
-              <h1 className="text-5xl font-bold text-gray-800 mb-6 leading-tight">
-                ستصبح نسخة أقوى من نفسك!
+            <AnimatedSection className="lg:w-1/2 text-center lg:text-right" animation="fade-right">
+              <h1 className="text-5xl font-bold text-gray-800 dark:text-white mb-6 leading-tight">
+                {t('heroTitle')}
               </h1>
-              <p className="text-xl text-gray-600 mb-8">
-                مدربك الشخصي عمر أشرف سيساعدك في تحقيق أهدافك في اللياقة البدنية والحصول على الجسم المثالي
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                {t('heroSubtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" className="bg-green-500 hover:bg-green-600 text-lg px-8 py-4">
-                  ابدأ رحلتك الآن
+                <Button size="lg" className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-lg px-8 py-4 transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                  {t('startJourney')}
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-4">
-                  شاهد النتائج
+                <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-green-500 text-green-600 hover:bg-green-500 hover:text-white dark:border-green-400 dark:text-green-400 transform transition-all duration-300 hover:scale-105">
+                  {t('viewResults')}
                 </Button>
               </div>
-            </div>
-            <div className="lg:w-1/2">
+            </AnimatedSection>
+            <AnimatedSection className="lg:w-1/2" animation="fade-left" delay={200}>
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/1ceb2b84-4db5-4e10-8be0-bf7e46cb4a37.png" 
+                  src={settings.heroImage}
                   alt="Omar Ashraf - Personal Trainer"
-                  className="rounded-2xl shadow-2xl w-full max-w-md mx-auto"
+                  className="rounded-2xl shadow-2xl w-full max-w-md mx-auto transform transition-all duration-500 hover:scale-105"
                 />
-                <div className="absolute -top-4 -right-4 bg-green-500 text-white p-3 rounded-full">
+                <div className="absolute -top-4 -right-4 bg-green-500 text-white p-3 rounded-full animate-pulse">
                   <Dumbbell className="w-6 h-6" />
                 </div>
               </div>
-            </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
       {/* Gallery Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">صور التدريب</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="relative overflow-hidden rounded-lg shadow-lg group">
-              <img 
-                src="/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png" 
-                alt="تدريب الأوزان"
-                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <p className="text-white font-semibold">تدريب الأوزان</p>
-              </div>
-            </div>
-            <div className="relative overflow-hidden rounded-lg shadow-lg group">
-              <img 
-                src="/lovable-uploads/78c7f92d-29b1-4699-9511-9e5848c5892e.png" 
-                alt="تمارين القوة"
-                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <p className="text-white font-semibold">تمارين القوة</p>
-              </div>
-            </div>
-            <div className="relative overflow-hidden rounded-lg shadow-lg group">
-              <img 
-                src="/lovable-uploads/8fb7f786-bdcb-4dac-a303-8405af22960b.png" 
-                alt="تمارين العضلات"
-                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <p className="text-white font-semibold">تمارين العضلات</p>
-              </div>
-            </div>
-            <div className="relative overflow-hidden rounded-lg shadow-lg group">
-              <img 
-                src="/lovable-uploads/37b67d4e-4f06-4346-b807-2caeee7427eb.png" 
-                alt="اللياقة البدنية"
-                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <p className="text-white font-semibold">اللياقة البدنية</p>
-              </div>
+      <AnimatedSection animation="fade-up">
+        <section className="py-16 bg-white dark:bg-gray-900">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">{t('trainingPhotos')}</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {settings.galleryImages.map((image, index) => (
+                <AnimatedSection key={index} animation="scale" delay={index * 100}>
+                  <div className="relative overflow-hidden rounded-lg shadow-lg group cursor-pointer">
+                    <img 
+                      src={image}
+                      alt={`Training ${index + 1}`}
+                      className="w-full h-64 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center">
+                      <p className="text-white font-semibold mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                        {t('fitness')}
+                      </p>
+                    </div>
+                  </div>
+                </AnimatedSection>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800">24/7</div>
-              <div className="text-gray-600">متاح دائماً</div>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800">+50</div>
-              <div className="text-gray-600">عميل راضي</div>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800">95%</div>
-              <div className="text-gray-600">نسبة النجاح</div>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="text-3xl font-bold text-gray-800">5</div>
-              <div className="text-gray-600">سنوات خبرة</div>
+      <AnimatedSection animation="fade-up">
+        <section className="py-16 bg-gray-50 dark:bg-gray-800">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                { icon: Clock, value: "24/7", label: t('available247') },
+                { icon: Users, value: settings.stats.clients, label: t('satisfiedClients') },
+                { icon: TrendingUp, value: settings.stats.successRate, label: t('successRate') },
+                { icon: Star, value: settings.stats.experience, label: t('yearsExperience') }
+              ].map((stat, index) => (
+                <AnimatedSection key={index} animation="scale" delay={index * 150}>
+                  <div className="text-center group">
+                    <div className="bg-green-100 dark:bg-green-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transform transition-all duration-300 group-hover:scale-110 group-hover:bg-green-200 dark:group-hover:bg-green-800/50">
+                      <stat.icon className="w-8 h-8 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="text-3xl font-bold text-gray-800 dark:text-white">{stat.value}</div>
+                    <div className="text-gray-600 dark:text-gray-300">{stat.label}</div>
+                  </div>
+                </AnimatedSection>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </AnimatedSection>
 
       {/* About Section */}
       <section id="about" className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold text-gray-800 mb-8">عمر أشرف</h2>
-            <p className="text-xl text-gray-600 mb-8">
-              مدرب شخصي معتمد مع خبرة واسعة في مجال اللياقة البدنية والتغذية. 
-              هدفي هو مساعدتك في تحقيق أهدافك والوصول إلى أفضل نسخة من نفسك.
+            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">{t('aboutTitle')}</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+              {t('aboutDescription')}
             </p>
             <div className="grid md:grid-cols-2 gap-8 mt-12">
               <div className="text-center">
@@ -184,7 +142,7 @@ const Index = () => {
       {/* Packages Section */}
       <section id="packages" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">اختر الباقة التي تناسبك</h2>
+          <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">اختر الباقة التي تناسبك</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             
             {/* Basic Package */}
@@ -301,7 +259,7 @@ const Index = () => {
       {/* Testimonials */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">آراء العملاء</h2>
+          <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">آراء العملاء</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
               <Card key={i} className="bg-white">
@@ -330,7 +288,7 @@ const Index = () => {
       {/* Steps Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">
+          <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">
             أربع خطوات لتحقيق الهدف معاً
           </h2>
           <div className="grid md:grid-cols-4 gap-8">
@@ -355,7 +313,7 @@ const Index = () => {
       {/* Contact Section */}
       <section id="contact" className="py-16 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-8">تواصل معي الآن</h2>
+          <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">تواصل معي الآن</h2>
           <p className="text-xl text-gray-600 mb-8">
             ابدأ رحلتك نحو الجسم المثالي اليوم
           </p>
@@ -373,7 +331,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12">
+      <footer className="bg-gray-800 dark:bg-gray-950 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
@@ -383,14 +341,14 @@ const Index = () => {
                   alt="Omar Ashraf Logo"
                   className="w-8 h-8"
                 />
-                <h3 className="text-xl font-bold">عمر أشرف</h3>
+                <h3 className="text-xl font-bold">{t('aboutTitle')}</h3>
               </div>
               <p className="text-gray-400">
-                مدربك الشخصي المعتمد لتحقيق أهدافك في اللياقة البدنية
+                {t('footerDescription')}
               </p>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4">الخدمات</h4>
+              <h4 className="text-lg font-semibold mb-4">{t('services')}</h4>
               <ul className="space-y-2 text-gray-400">
                 <li>تدريب شخصي</li>
                 <li>برامج غذائية</li>
@@ -398,28 +356,28 @@ const Index = () => {
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4">روابط سريعة</h4>
+              <h4 className="text-lg font-semibold mb-4">{t('quickLinks')}</h4>
               <ul className="space-y-2 text-gray-400">
-                <li>الرئيسية</li>
-                <li>نبذة عني</li>
-                <li>الباقات</li>
-                <li>تواصل معي</li>
+                <li><a href="#home" className="hover:text-green-400 transition-colors">{t('home')}</a></li>
+                <li><a href="#about" className="hover:text-green-400 transition-colors">{t('about')}</a></li>
+                <li><a href="#packages" className="hover:text-green-400 transition-colors">{t('packages')}</a></li>
+                <li><a href="#contact" className="hover:text-green-400 transition-colors">{t('contact')}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-lg font-semibold mb-4">تابعني</h4>
+              <h4 className="text-lg font-semibold mb-4">{t('followMe')}</h4>
               <div className="flex space-x-reverse space-x-4">
-                <a href="#" className="bg-green-500 p-2 rounded-full hover:bg-green-600">
+                <a href={settings.socialLinks.instagram} className="bg-green-500 p-2 rounded-full hover:bg-green-600 transform transition-all duration-300 hover:scale-110">
                   <Instagram className="w-5 h-5" />
                 </a>
-                <a href="#" className="bg-green-500 p-2 rounded-full hover:bg-green-600">
+                <a href={settings.socialLinks.whatsapp} className="bg-green-500 p-2 rounded-full hover:bg-green-600 transform transition-all duration-300 hover:scale-110">
                   <MessageCircle className="w-5 h-5" />
                 </a>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>© 2024 عمر أشرف. جميع الحقوق محفوظة.</p>
+            <p>© 2024 {t('aboutTitle')}. {t('rightsReserved')}</p>
           </div>
         </div>
       </footer>
