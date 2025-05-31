@@ -91,7 +91,19 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const savedSettings = localStorage.getItem('adminSettings');
     if (savedSettings) {
-      setSettings(JSON.parse(savedSettings));
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setSettings(parsed);
+        console.log('Loaded admin settings from localStorage:', parsed);
+      } catch (error) {
+        console.error('Failed to parse admin settings from localStorage:', error);
+      }
+    }
+
+    const savedAdminMode = localStorage.getItem('adminMode');
+    if (savedAdminMode === 'true') {
+      setIsAdminMode(true);
+      console.log('Admin mode enabled from localStorage');
     }
   }, []);
 
@@ -99,10 +111,14 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const updatedSettings = { ...settings, ...newSettings };
     setSettings(updatedSettings);
     localStorage.setItem('adminSettings', JSON.stringify(updatedSettings));
+    console.log('Admin settings updated:', updatedSettings);
   };
 
   const toggleAdminMode = () => {
-    setIsAdminMode(!isAdminMode);
+    const newAdminMode = !isAdminMode;
+    setIsAdminMode(newAdminMode);
+    localStorage.setItem('adminMode', newAdminMode.toString());
+    console.log('Admin mode toggled to:', newAdminMode);
   };
 
   return (
