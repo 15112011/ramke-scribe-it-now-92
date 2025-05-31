@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Star, Users, Clock, TrendingUp, Phone, MessageCircle, Instagram, CheckCircle } from 'lucide-react';
+import { Star, Users, Clock, TrendingUp, Phone, MessageCircle, Instagram, CheckCircle, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -10,7 +10,13 @@ const Index = () => {
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-green-600">Omar Ashraf</div>
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/8d1f7dd8-67c5-4ab2-8ea3-d655ef1cb613.png" 
+              alt="Omar Ashraf Logo"
+              className="w-12 h-12"
+            />
+          </div>
           <nav className="hidden md:flex space-x-reverse space-x-6">
             <a href="#home" className="text-gray-700 hover:text-green-600">الرئيسية</a>
             <a href="#about" className="text-gray-700 hover:text-green-600">نبذة عني</a>
@@ -46,12 +52,12 @@ const Index = () => {
             <div className="lg:w-1/2">
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/114a82f4-a26e-4679-88b7-b5840aad6fe8.png" 
+                  src="/lovable-uploads/1ceb2b84-4db5-4e10-8be0-bf7e46cb4a37.png" 
                   alt="Omar Ashraf - Personal Trainer"
                   className="rounded-2xl shadow-2xl w-full max-w-md mx-auto"
                 />
                 <div className="absolute -top-4 -right-4 bg-green-500 text-white p-3 rounded-full">
-                  <TrendingUp className="w-6 h-6" />
+                  <Dumbbell className="w-6 h-6" />
                 </div>
               </div>
             </div>
@@ -59,8 +65,57 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Gallery Section */}
       <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">صور التدريب</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="relative overflow-hidden rounded-lg shadow-lg group">
+              <img 
+                src="/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png" 
+                alt="تدريب الأوزان"
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <p className="text-white font-semibold">تدريب الأوزان</p>
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-lg shadow-lg group">
+              <img 
+                src="/lovable-uploads/78c7f92d-29b1-4699-9511-9e5848c5892e.png" 
+                alt="تمارين القوة"
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <p className="text-white font-semibold">تمارين القوة</p>
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-lg shadow-lg group">
+              <img 
+                src="/lovable-uploads/8fb7f786-bdcb-4dac-a303-8405af22960b.png" 
+                alt="تمارين العضلات"
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <p className="text-white font-semibold">تمارين العضلات</p>
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-lg shadow-lg group">
+              <img 
+                src="/lovable-uploads/37b67d4e-4f06-4346-b807-2caeee7427eb.png" 
+                alt="اللياقة البدنية"
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <p className="text-white font-semibold">اللياقة البدنية</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
@@ -74,8 +129,8 @@ const Index = () => {
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-green-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-800">+8</div>
-              <div className="text-gray-600">عملاء</div>
+              <div className="text-3xl font-bold text-gray-800">+50</div>
+              <div className="text-gray-600">عميل راضي</div>
             </div>
             <div className="text-center">
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -88,74 +143,15 @@ const Index = () => {
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Star className="w-8 h-8 text-green-600" />
               </div>
-              <div className="text-3xl font-bold text-gray-800">+500</div>
-              <div className="text-gray-600">عميل</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">آراء العملاء</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="bg-white">
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center ml-4">
-                      <Users className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">عميل {i}</div>
-                      <div className="flex text-yellow-400">
-                        {[1,2,3,4,5].map(star => <Star key={star} className="w-4 h-4 fill-current" />)}
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-gray-600">
-                    تجربة رائعة مع المدرب عمر، حقق لي نتائج مذهلة في وقت قصير. أنصح بشدة بالتعامل معه.
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Me */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">لماذا تختارني؟</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-10 h-10 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">خبرة عملية</h3>
-              <p className="text-gray-600">سنوات من الخبرة في مجال التدريب والتغذية</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-10 h-10 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">نتائج مضمونة</h3>
-              <p className="text-gray-600">نسبة نجاح عالية مع جميع العملاء</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Clock className="w-10 h-10 text-green-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-4">متابعة مستمرة</h3>
-              <p className="text-gray-600">متاح 24/7 للرد على استفساراتك</p>
+              <div className="text-3xl font-bold text-gray-800">5</div>
+              <div className="text-gray-600">سنوات خبرة</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 bg-gray-50">
+      <section id="about" className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold text-gray-800 mb-8">عمر أشرف</h2>
@@ -186,7 +182,7 @@ const Index = () => {
       </section>
 
       {/* Packages Section */}
-      <section id="packages" className="py-16 bg-white">
+      <section id="packages" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">اختر الباقة التي تناسبك</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -302,6 +298,35 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">آراء العملاء</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="bg-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center ml-4">
+                      <Users className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">عميل {i}</div>
+                      <div className="flex text-yellow-400">
+                        {[1,2,3,4,5].map(star => <Star key={star} className="w-4 h-4 fill-current" />)}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-600">
+                    تجربة رائعة مع المدرب عمر، حقق لي نتائج مذهلة في وقت قصير. أنصح بشدة بالتعامل معه.
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Steps Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -352,7 +377,14 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">عمر أشرف</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <img 
+                  src="/lovable-uploads/8d1f7dd8-67c5-4ab2-8ea3-d655ef1cb613.png" 
+                  alt="Omar Ashraf Logo"
+                  className="w-8 h-8"
+                />
+                <h3 className="text-xl font-bold">عمر أشرف</h3>
+              </div>
               <p className="text-gray-400">
                 مدربك الشخصي المعتمد لتحقيق أهدافك في اللياقة البدنية
               </p>
