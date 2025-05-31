@@ -20,6 +20,67 @@ interface AdminSettings {
     successRate: string;
     experience: string;
   };
+  // New comprehensive content settings
+  content: {
+    heroTitle: string;
+    heroSubtitle: string;
+    aboutTitle: string;
+    packagesTitle: string;
+    testimonialsTitle: string;
+    stepsTitle: string;
+    contactTitle: string;
+    contactSubtitle: string;
+    footerDescription: string;
+    companyName: string;
+    logo: string;
+    favIcon: string;
+  };
+  sectionTitles: {
+    home: string;
+    about: string;
+    packages: string;
+    contact: string;
+    gallery: string;
+    services: string;
+    quickLinks: string;
+    followMe: string;
+  };
+  buttons: {
+    startJourney: string;
+    viewResults: string;
+    choosePackage: string;
+    whatsapp: string;
+    callMe: string;
+    admin: string;
+    saveChanges: string;
+  };
+  packageLabels: {
+    basic: string;
+    professional: string;
+    premium: string;
+    mostPopular: string;
+  };
+  specialties: {
+    certifications: {
+      title: string;
+      items: string[];
+    };
+    specializations: {
+      title: string;
+      items: string[];
+    };
+  };
+  steps: Array<{
+    step: string;
+    title: string;
+    description: string;
+  }>;
+  testimonials: Array<{
+    name: string;
+    content: string;
+    rating: number;
+  }>;
+  services: string[];
 }
 
 interface AdminContextType {
@@ -79,7 +140,80 @@ const defaultSettings: AdminSettings = {
     clients: "+50",
     successRate: "95%",
     experience: "5"
-  }
+  },
+  content: {
+    heroTitle: "حقق حلمك بالجسم المثالي مع عمر أشرف",
+    heroSubtitle: "مدرب شخصي معتمد يساعدك في الوصول لأهدافك بأسرع وقت وأفضل النتائج",
+    aboutTitle: "عمر أشرف",
+    packagesTitle: "اختر الباقة التي تناسبك",
+    testimonialsTitle: "آراء العملاء",
+    stepsTitle: "أربع خطوات لتحقيق الهدف معاً",
+    contactTitle: "تواصل معي الآن",
+    contactSubtitle: "ابدأ رحلتك نحو الجسم المثالي اليوم",
+    footerDescription: "مدرب شخصي معتمد متخصص في تحقيق أهداف اللياقة البدنية",
+    companyName: "عمر أشرف - المدرب الشخصي",
+    logo: "/lovable-uploads/8d1f7dd8-67c5-4ab2-8ea3-d655ef1cb613.png",
+    favIcon: "/favicon.ico"
+  },
+  sectionTitles: {
+    home: "الرئيسية",
+    about: "من أنا",
+    packages: "الباقات",
+    contact: "تواصل معي",
+    gallery: "صور التدريب",
+    services: "الخدمات",
+    quickLinks: "روابط سريعة",
+    followMe: "تابعني"
+  },
+  buttons: {
+    startJourney: "ابدأ رحلتك",
+    viewResults: "شاهد النتائج",
+    choosePackage: "اختر هذه الباقة",
+    whatsapp: "واتساب",
+    callMe: "اتصل بي",
+    admin: "لوحة التحكم",
+    saveChanges: "حفظ التغييرات"
+  },
+  packageLabels: {
+    basic: "المبتدئ",
+    professional: "المحترف",
+    premium: "المتميز",
+    mostPopular: "الأكثر شعبية"
+  },
+  specialties: {
+    certifications: {
+      title: "شهادات واعتمادات",
+      items: [
+        "مدرب شخصي معتمد",
+        "أخصائي تغذية",
+        "خبرة +5 سنوات"
+      ]
+    },
+    specializations: {
+      title: "التخصصات",
+      items: [
+        "بناء العضلات",
+        "حرق الدهون",
+        "اللياقة العامة"
+      ]
+    }
+  },
+  steps: [
+    { step: "1", title: "التواصل", description: "تواصل معي عبر الواتساب" },
+    { step: "2", title: "التقييم", description: "تقييم حالتك الصحية" },
+    { step: "3", title: "البرنامج", description: "وضع برنامج مخصص لك" },
+    { step: "4", title: "النتائج", description: "تحقيق أهدافك المرجوة" }
+  ],
+  testimonials: [
+    { name: "عميل 1", content: "تجربة رائعة مع المدرب عمر، حقق لي نتائج مذهلة في وقت قصير. أنصح بشدة بالتعامل معه.", rating: 5 },
+    { name: "عميل 2", content: "برنامج التدريب والنظام الغذائي كان ممتاز، والمتابعة المستمرة ساعدتني كثيراً.", rating: 5 },
+    { name: "عميل 3", content: "أفضل مدرب تعاملت معه، صبور ومتفهم ويساعد في تحقيق الأهداف بطريقة صحية.", rating: 5 }
+  ],
+  services: [
+    "تدريب شخصي",
+    "برامج غذائية",
+    "استشارات اللياقة"
+  ]
 };
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -93,7 +227,7 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (savedSettings) {
       try {
         const parsed = JSON.parse(savedSettings);
-        setSettings(parsed);
+        setSettings({ ...defaultSettings, ...parsed });
         console.log('Loaded admin settings from localStorage:', parsed);
       } catch (error) {
         console.error('Failed to parse admin settings from localStorage:', error);

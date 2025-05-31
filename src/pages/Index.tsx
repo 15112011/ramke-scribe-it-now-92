@@ -23,17 +23,17 @@ const Index = () => {
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <AnimatedSection className="lg:w-1/2 text-center lg:text-right" animation="fade-right">
               <h1 className="text-5xl font-bold text-gray-800 dark:text-white mb-6 leading-tight">
-                {t('heroTitle')}
+                {settings.content.heroTitle}
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                {t('heroSubtitle')}
+                {settings.content.heroSubtitle}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button size="lg" className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-lg px-8 py-4 transform transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg">
-                  {t('startJourney')}
+                  {settings.buttons.startJourney}
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-green-500 text-green-600 hover:bg-green-500 hover:text-white dark:border-green-400 dark:text-green-400 dark:hover:bg-green-600 dark:hover:border-green-600 transform transition-all duration-300 hover:scale-105 shadow-lg">
-                  {t('viewResults')}
+                  {settings.buttons.viewResults}
                 </Button>
               </div>
             </AnimatedSection>
@@ -60,7 +60,7 @@ const Index = () => {
       <AnimatedSection animation="fade-up">
         <section className="py-16 bg-white dark:bg-gray-900 transition-all duration-500">
           <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">{t('trainingPhotos')}</h2>
+            <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">{settings.sectionTitles.gallery}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {settings.galleryImages.map((image, index) => (
                 <AnimatedSection key={index} animation="scale" delay={index * 100}>
@@ -114,7 +114,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <AnimatedSection animation="fade-up">
-              <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">{t('aboutTitle')}</h2>
+              <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">{settings.content.aboutTitle}</h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
                 {settings.aboutText}
               </p>
@@ -122,21 +122,21 @@ const Index = () => {
             <div className="grid md:grid-cols-2 gap-8 mt-12">
               <AnimatedSection animation="fade-right" delay={200}>
                 <div className="text-center bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105">
-                  <h3 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">شهادات واعتمادات</h3>
+                  <h3 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">{settings.specialties.certifications.title}</h3>
                   <ul className="text-gray-600 dark:text-gray-300 space-y-2">
-                    <li>• مدرب شخصي معتمد</li>
-                    <li>• أخصائي تغذية</li>
-                    <li>• خبرة +5 سنوات</li>
+                    {settings.specialties.certifications.items.map((item, index) => (
+                      <li key={index}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
               </AnimatedSection>
               <AnimatedSection animation="fade-left" delay={300}>
                 <div className="text-center bg-gray-50 dark:bg-gray-800 p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105">
-                  <h3 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">التخصصات</h3>
+                  <h3 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-white">{settings.specialties.specializations.title}</h3>
                   <ul className="text-gray-600 dark:text-gray-300 space-y-2">
-                    <li>• بناء العضلات</li>
-                    <li>• حرق الدهون</li>
-                    <li>• اللياقة العامة</li>
+                    {settings.specialties.specializations.items.map((item, index) => (
+                      <li key={index}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
               </AnimatedSection>
@@ -149,7 +149,7 @@ const Index = () => {
       <section id="packages" className="py-16 bg-gray-50 dark:bg-gray-800 transition-all duration-500">
         <div className="container mx-auto px-4">
           <AnimatedSection animation="fade-up">
-            <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">اختر الباقة التي تناسبك</h2>
+            <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">{settings.content.packagesTitle}</h2>
           </AnimatedSection>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             
@@ -157,7 +157,7 @@ const Index = () => {
             <AnimatedSection animation="fade-up" delay={100}>
               <Card className="relative border-2 border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500 transition-all duration-300 transform hover:scale-105 bg-white dark:bg-gray-900 shadow-lg hover:shadow-xl">
                 <CardContent className="p-8 text-center">
-                  <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">المبتدئ</h3>
+                  <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">{settings.packageLabels.basic}</h3>
                   <div className="text-4xl font-bold text-gray-800 dark:text-white mb-6">
                     {settings.packages.basic.price}<span className="text-lg text-gray-600 dark:text-gray-400"> ج.م</span>
                   </div>
@@ -170,7 +170,7 @@ const Index = () => {
                     ))}
                   </ul>
                   <Button className="w-full bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transform transition-all duration-300 hover:scale-105">
-                    اختر هذه الباقة
+                    {settings.buttons.choosePackage}
                   </Button>
                 </CardContent>
               </Card>
@@ -180,10 +180,10 @@ const Index = () => {
             <AnimatedSection animation="fade-up" delay={200}>
               <Card className="relative border-2 border-green-500 shadow-xl scale-105 bg-white dark:bg-gray-900">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold animate-pulse">
-                  الأكثر شعبية
+                  {settings.packageLabels.mostPopular}
                 </div>
                 <CardContent className="p-8 text-center">
-                  <h3 className="text-2xl font-bold mb-4 text-green-600">المحترف</h3>
+                  <h3 className="text-2xl font-bold mb-4 text-green-600">{settings.packageLabels.professional}</h3>
                   <div className="text-4xl font-bold text-gray-800 dark:text-white mb-6">
                     {settings.packages.professional.price}<span className="text-lg text-gray-600 dark:text-gray-400"> ج.م</span>
                   </div>
@@ -196,7 +196,7 @@ const Index = () => {
                     ))}
                   </ul>
                   <Button className="w-full bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 transform transition-all duration-300 hover:scale-105 shadow-lg">
-                    اختر هذه الباقة
+                    {settings.buttons.choosePackage}
                   </Button>
                 </CardContent>
               </Card>
@@ -206,7 +206,7 @@ const Index = () => {
             <AnimatedSection animation="fade-up" delay={300}>
               <Card className="relative border-2 border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500 transition-all duration-300 transform hover:scale-105 bg-white dark:bg-gray-900 shadow-lg hover:shadow-xl">
                 <CardContent className="p-8 text-center">
-                  <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">المتميز</h3>
+                  <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">{settings.packageLabels.premium}</h3>
                   <div className="text-4xl font-bold text-gray-800 dark:text-white mb-6">
                     {settings.packages.premium.price}<span className="text-lg text-gray-600 dark:text-gray-400"> ج.م</span>
                   </div>
@@ -219,7 +219,7 @@ const Index = () => {
                     ))}
                   </ul>
                   <Button className="w-full bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transform transition-all duration-300 hover:scale-105">
-                    اختر هذه الباقة
+                    {settings.buttons.choosePackage}
                   </Button>
                 </CardContent>
               </Card>
@@ -232,10 +232,10 @@ const Index = () => {
       <section className="py-16 bg-white dark:bg-gray-900 transition-all duration-500">
         <div className="container mx-auto px-4">
           <AnimatedSection animation="fade-up">
-            <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">آراء العملاء</h2>
+            <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">{settings.content.testimonialsTitle}</h2>
           </AnimatedSection>
           <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
+            {settings.testimonials.map((testimonial, i) => (
               <AnimatedSection key={i} animation="fade-up" delay={i * 100}>
                 <Card className="bg-white dark:bg-gray-800 transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
                   <CardContent className="p-6">
@@ -244,14 +244,16 @@ const Index = () => {
                         <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-800 dark:text-white">عميل {i}</div>
+                        <div className="font-semibold text-gray-800 dark:text-white">{testimonial.name}</div>
                         <div className="flex text-yellow-400">
-                          {[1,2,3,4,5].map(star => <Star key={star} className="w-4 h-4 fill-current" />)}
+                          {Array.from({ length: testimonial.rating }, (_, star) => (
+                            <Star key={star} className="w-4 h-4 fill-current" />
+                          ))}
                         </div>
                       </div>
                     </div>
                     <p className="text-gray-600 dark:text-gray-300">
-                      تجربة رائعة مع المدرب عمر، حقق لي نتائج مذهلة في وقت قصير. أنصح بشدة بالتعامل معه.
+                      {testimonial.content}
                     </p>
                   </CardContent>
                 </Card>
@@ -266,23 +268,18 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <AnimatedSection animation="fade-up">
             <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">
-              أربع خطوات لتحقيق الهدف معاً
+              {settings.content.stepsTitle}
             </h2>
           </AnimatedSection>
           <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { step: "1", title: "التواصل", desc: "تواصل معي عبر الواتساب" },
-              { step: "2", title: "التقييم", desc: "تقييم حالتك الصحية" },
-              { step: "3", title: "البرنامج", desc: "وضع برنامج مخصص لك" },
-              { step: "4", title: "النتائج", desc: "تحقيق أهدافك المرجوة" }
-            ].map((item, index) => (
+            {settings.steps.map((item, index) => (
               <AnimatedSection key={index} animation="scale" delay={index * 150}>
                 <div className="text-center group">
                   <div className="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl shadow-lg">
                     {item.step}
                   </div>
                   <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">{item.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{item.desc}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
                 </div>
               </AnimatedSection>
             ))}
@@ -294,9 +291,9 @@ const Index = () => {
       <section id="contact" className="py-16 bg-white dark:bg-gray-900 transition-all duration-500">
         <div className="container mx-auto px-4 text-center">
           <AnimatedSection animation="fade-up">
-            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">تواصل معي الآن</h2>
+            <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">{settings.content.contactTitle}</h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-              ابدأ رحلتك نحو الجسم المثالي اليوم
+              {settings.content.contactSubtitle}
             </p>
           </AnimatedSection>
           <AnimatedSection animation="scale" delay={200}>
@@ -307,7 +304,7 @@ const Index = () => {
                 onClick={() => window.open(settings.socialLinks.whatsapp, '_blank')}
               >
                 <MessageCircle className="w-5 h-5 ml-2" />
-                واتساب
+                {settings.buttons.whatsapp}
               </Button>
               <Button 
                 size="lg" 
@@ -316,7 +313,7 @@ const Index = () => {
                 onClick={() => window.open(`tel:${settings.socialLinks.phone}`, '_blank')}
               >
                 <Phone className="w-5 h-5 ml-2" />
-                اتصل بي
+                {settings.buttons.callMe}
               </Button>
             </div>
           </AnimatedSection>
@@ -331,41 +328,41 @@ const Index = () => {
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   <img 
-                    src="/lovable-uploads/8d1f7dd8-67c5-4ab2-8ea3-d655ef1cb613.png" 
+                    src={settings.content.logo} 
                     alt="Omar Ashraf Logo"
                     className="w-8 h-8"
                   />
-                  <h3 className="text-xl font-bold">{t('aboutTitle')}</h3>
+                  <h3 className="text-xl font-bold">{settings.content.aboutTitle}</h3>
                 </div>
                 <p className="text-gray-400">
-                  {t('footerDescription')}
+                  {settings.content.footerDescription}
                 </p>
               </div>
             </AnimatedSection>
             <AnimatedSection animation="fade-up" delay={200}>
               <div>
-                <h4 className="text-lg font-semibold mb-4">{t('services')}</h4>
+                <h4 className="text-lg font-semibold mb-4">{settings.sectionTitles.services}</h4>
                 <ul className="space-y-2 text-gray-400">
-                  <li className="hover:text-green-400 transition-colors duration-300 cursor-pointer">تدريب شخصي</li>
-                  <li className="hover:text-green-400 transition-colors duration-300 cursor-pointer">برامج غذائية</li>
-                  <li className="hover:text-green-400 transition-colors duration-300 cursor-pointer">استشارات اللياقة</li>
+                  {settings.services.map((service, index) => (
+                    <li key={index} className="hover:text-green-400 transition-colors duration-300 cursor-pointer">{service}</li>
+                  ))}
                 </ul>
               </div>
             </AnimatedSection>
             <AnimatedSection animation="fade-up" delay={300}>
               <div>
-                <h4 className="text-lg font-semibold mb-4">{t('quickLinks')}</h4>
+                <h4 className="text-lg font-semibold mb-4">{settings.sectionTitles.quickLinks}</h4>
                 <ul className="space-y-2 text-gray-400">
-                  <li><a href="#home" className="hover:text-green-400 transition-colors duration-300">{t('home')}</a></li>
-                  <li><a href="#about" className="hover:text-green-400 transition-colors duration-300">{t('about')}</a></li>
-                  <li><a href="#packages" className="hover:text-green-400 transition-colors duration-300">{t('packages')}</a></li>
-                  <li><a href="#contact" className="hover:text-green-400 transition-colors duration-300">{t('contact')}</a></li>
+                  <li><a href="#home" className="hover:text-green-400 transition-colors duration-300">{settings.sectionTitles.home}</a></li>
+                  <li><a href="#about" className="hover:text-green-400 transition-colors duration-300">{settings.sectionTitles.about}</a></li>
+                  <li><a href="#packages" className="hover:text-green-400 transition-colors duration-300">{settings.sectionTitles.packages}</a></li>
+                  <li><a href="#contact" className="hover:text-green-400 transition-colors duration-300">{settings.sectionTitles.contact}</a></li>
                 </ul>
               </div>
             </AnimatedSection>
             <AnimatedSection animation="fade-up" delay={400}>
               <div>
-                <h4 className="text-lg font-semibold mb-4">{t('followMe')}</h4>
+                <h4 className="text-lg font-semibold mb-4">{settings.sectionTitles.followMe}</h4>
                 <div className="flex space-x-reverse space-x-4">
                   <a 
                     href={settings.socialLinks.instagram} 
@@ -389,7 +386,7 @@ const Index = () => {
           </div>
           <AnimatedSection animation="fade-up" delay={500}>
             <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-              <p>© 2024 {t('aboutTitle')}. {t('rightsReserved')}</p>
+              <p>© 2024 {settings.content.aboutTitle}. {t('rightsReserved')}</p>
             </div>
           </AnimatedSection>
         </div>

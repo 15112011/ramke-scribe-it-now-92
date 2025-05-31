@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 export const Header: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
-  const { isAdminMode, toggleAdminMode } = useAdmin();
+  const { isAdminMode, toggleAdminMode, settings } = useAdmin();
   const navigate = useNavigate();
 
   return (
@@ -19,7 +19,7 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <img 
-            src="/lovable-uploads/8d1f7dd8-67c5-4ab2-8ea3-d655ef1cb613.png" 
+            src={settings.content.logo} 
             alt="Omar Ashraf Logo"
             className="w-12 h-12 transform transition-transform duration-300 hover:scale-110"
           />
@@ -27,16 +27,16 @@ export const Header: React.FC = () => {
         
         <nav className="hidden md:flex space-x-reverse space-x-6">
           <a href="#home" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {t('home')}
+            {settings.sectionTitles.home}
           </a>
           <a href="#about" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {t('about')}
+            {settings.sectionTitles.about}
           </a>
           <a href="#packages" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {t('packages')}
+            {settings.sectionTitles.packages}
           </a>
           <a href="#contact" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {t('contact')}
+            {settings.sectionTitles.contact}
           </a>
         </nav>
 
@@ -85,12 +85,12 @@ export const Header: React.FC = () => {
               className="border-green-500 text-green-600 hover:bg-green-500 hover:text-white dark:border-green-400 dark:text-green-400 transform transition-all duration-300 hover:scale-105"
             >
               <Settings className="w-4 h-4 mr-2" />
-              Admin
+              {settings.buttons.admin}
             </Button>
           )}
 
           <Button className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-            {t('contact')}
+            {settings.sectionTitles.contact}
           </Button>
         </div>
       </div>
