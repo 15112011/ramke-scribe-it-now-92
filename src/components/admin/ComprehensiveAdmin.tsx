@@ -1,17 +1,17 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Database, Settings, Plus, Layout, Palette } from 'lucide-react';
+import { BarChart3, Database, Settings, Plus, Layout, Users } from 'lucide-react';
 import { SectionDashboard } from './SectionDashboard';
 import { SectionList } from './SectionList';
 import { AdminSectionCRUD } from '../AdminSectionCRUD';
+import { SubscriptionRequests } from './SubscriptionRequests';
 
 export const ComprehensiveAdmin: React.FC = () => {
   return (
     <div className="p-6">
       <Tabs defaultValue="dashboard" className="w-full">
         <div className="mb-8">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-100/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-5 bg-gray-100/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-1 h-auto">
             <TabsTrigger 
               value="dashboard" 
               className="flex items-center gap-2 py-3 px-4 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-md transition-all"
@@ -24,21 +24,28 @@ export const ComprehensiveAdmin: React.FC = () => {
               className="flex items-center gap-2 py-3 px-4 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-md transition-all"
             >
               <Database className="w-4 h-4" />
-              <span className="hidden sm:inline">All Sections</span>
+              <span className="hidden sm:inline">Sections</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="subscriptions" 
+              className="flex items-center gap-2 py-3 px-4 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-md transition-all"
+            >
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">Subscriptions</span>
             </TabsTrigger>
             <TabsTrigger 
               value="crud" 
               className="flex items-center gap-2 py-3 px-4 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-md transition-all"
             >
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Create/Manage</span>
+              <span className="hidden sm:inline">Create</span>
             </TabsTrigger>
             <TabsTrigger 
               value="settings" 
               className="flex items-center gap-2 py-3 px-4 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:shadow-md transition-all"
             >
               <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">Content Settings</span>
+              <span className="hidden sm:inline">Settings</span>
             </TabsTrigger>
           </TabsList>
         </div>
@@ -70,6 +77,21 @@ export const ComprehensiveAdmin: React.FC = () => {
               Organize, edit, and control the visibility of all your website sections.
             </p>
             <SectionList />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="subscriptions" className="space-y-6 mt-0">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-purple-200/50 dark:border-purple-800/50">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                <Users className="w-4 h-4 text-white" />
+              </div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Subscription Management</h2>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Review and manage client subscription applications and payment verifications.
+            </p>
+            <SubscriptionRequests />
           </div>
         </TabsContent>
 

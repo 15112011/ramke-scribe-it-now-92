@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Crown, Star, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createClient } from '@supabase/supabase-js';
+import { SubscriptionFlow } from '@/components/SubscriptionFlow';
 
 // Initialize Supabase client with environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -72,6 +73,7 @@ const plans: Plan[] = [
 
 export const SubscriptionPayment: React.FC = () => {
   const [loading, setLoading] = useState<string | null>(null);
+  const [showCustomFlow, setShowCustomFlow] = useState(false);
   const { toast } = useToast();
 
   const handleSubscribe = async (planId: string) => {
@@ -126,6 +128,30 @@ export const SubscriptionPayment: React.FC = () => {
       setLoading(null);
     }
   };
+
+  // Show custom subscription flow if requested
+  if (showCustomFlow) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-12">
+        <div className="container mx-auto">
+          <div className="text-center mb-8">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCustomFlow(false)}
+              className="mb-4"
+            >
+              ← Back to Standard Plans
+            </Button>
+            <h1 className="text-4xl font-bold mb-4">Personal Training Application</h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Apply for personalized one-on-one coaching with Omar
+            </p>
+          </div>
+          <SubscriptionFlow />
+        </div>
+      </div>
+    );
+  }
 
   // Show configuration message if Supabase is not configured
   if (!supabase) {
@@ -211,6 +237,20 @@ export const SubscriptionPayment: React.FC = () => {
         <p className="text-gray-600 dark:text-gray-400">
           Unlock premium features with our subscription plans
         </p>
+      </div>
+
+      {/* Custom Training Option */}
+      <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl p-8 text-white text-center mb-8">
+        <h3 className="text-2xl font-bold mb-4">🏆 Personal Training with Omar</h3>
+        <p className="text-emerald-100 mb-6">
+          Get exclusive one-on-one coaching, personalized meal plans, and 24/7 support
+        </p>
+        <Button 
+          onClick={() => setShowCustomFlow(true)}
+          className="bg-white text-emerald-600 hover:bg-emerald-50 font-semibold px-8 py-3"
+        >
+          Apply for Personal Training
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
