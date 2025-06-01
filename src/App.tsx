@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
+import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 import { AdminProvider } from "./contexts/AdminContext";
 import { SectionsProvider } from "./contexts/SectionsContext";
@@ -25,6 +26,7 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/subscription" element={<Subscription />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

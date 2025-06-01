@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,7 +27,7 @@ export const InteractiveTestimonials: React.FC = () => {
       ? testimonial.content 
       : (language === 'ar' ? testimonial.content.ar : testimonial.content.en),
     rating: testimonial.rating,
-    image: testimonial.image || "/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png",
+    image: settings.images?.testimonialImage || "/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png",
     achievement: language === 'ar' ? "نتائج مذهلة" : "Amazing Results"
   }));
 
