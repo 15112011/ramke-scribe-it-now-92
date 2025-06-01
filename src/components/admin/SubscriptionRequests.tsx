@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,45 +35,8 @@ interface SubscriptionRequest {
 }
 
 export const SubscriptionRequests: React.FC = () => {
-  const [requests, setRequests] = useState<SubscriptionRequest[]>([
-    {
-      id: '1',
-      email: 'ahmed.hassan@email.com',
-      name: 'Ahmed Hassan',
-      phone: '+971 50 123 4567',
-      selectedPlan: 'Premium Transformation',
-      goals: 'I want to lose 20kg and build muscle. I have been struggling with consistency and need professional guidance to achieve my fitness goals.',
-      paymentScreenshot: '/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png',
-      status: 'pending',
-      submittedAt: '2024-01-15T10:30:00Z',
-      planPrice: '$249'
-    },
-    {
-      id: '2',
-      email: 'sarah.mohamed@email.com',
-      name: 'Sarah Mohamed',
-      phone: '+971 55 987 6543',
-      selectedPlan: 'Elite Coaching',
-      goals: 'I am preparing for a fitness competition and need expert guidance on nutrition and training to get stage-ready.',
-      paymentScreenshot: '/lovable-uploads/78c7f92d-29b1-4699-9511-9e5848c5892e.png',
-      status: 'approved',
-      submittedAt: '2024-01-14T15:45:00Z',
-      planPrice: '$499'
-    },
-    {
-      id: '3',
-      email: 'mahmoud.ali@email.com',
-      name: 'Mahmoud Ali',
-      phone: '+971 52 456 7890',
-      selectedPlan: 'Basic Training',
-      goals: 'I am a beginner and want to start my fitness journey with proper guidance and support.',
-      paymentScreenshot: '/lovable-uploads/8fb7f786-bdcb-4dac-a303-8405af22960b.png',
-      status: 'pending',
-      submittedAt: '2024-01-13T09:15:00Z',
-      planPrice: '$99'
-    }
-  ]);
-
+  // Start with empty array - no placeholder data
+  const [requests, setRequests] = useState<SubscriptionRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<SubscriptionRequest | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const { toast } = useToast();
@@ -133,6 +95,19 @@ export const SubscriptionRequests: React.FC = () => {
           </Badge>
         </div>
       </div>
+
+      {/* Empty State */}
+      {requests.length === 0 && (
+        <Card className="border-2 border-dashed border-gray-300">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <User className="w-12 h-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-600 mb-2">No Subscription Requests</h3>
+            <p className="text-gray-500 text-center">
+              Subscription requests will appear here when customers submit applications.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Pending Requests */}
       {pendingRequests.length > 0 && (

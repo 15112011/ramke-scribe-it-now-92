@@ -24,9 +24,11 @@ export const InteractiveTestimonials: React.FC = () => {
   // Convert multilingual testimonials to current language format
   const testimonials: Testimonial[] = settings.testimonials.map(testimonial => ({
     name: testimonial.name,
-    content: language === 'ar' ? testimonial.content.ar : testimonial.content.en,
+    content: typeof testimonial.content === 'string' 
+      ? testimonial.content 
+      : (language === 'ar' ? testimonial.content.ar : testimonial.content.en),
     rating: testimonial.rating,
-    image: "/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png",
+    image: testimonial.image || "/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png",
     achievement: language === 'ar' ? "نتائج مذهلة" : "Amazing Results"
   }));
 
@@ -39,8 +41,10 @@ export const InteractiveTestimonials: React.FC = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(nextTestimonial, 5000);
-    return () => clearInterval(interval);
+    if (testimonials.length > 0) {
+      const interval = setInterval(nextTestimonial, 5000);
+      return () => clearInterval(interval);
+    }
   }, [testimonials.length]);
 
   if (testimonials.length === 0) {
@@ -49,13 +53,18 @@ export const InteractiveTestimonials: React.FC = () => {
 
   const currentTestimonial = testimonials[currentIndex];
 
+  const getLocalizedText = (text: string | { ar: string; en: string }): string => {
+    if (typeof text === 'string') return text;
+    return language === 'ar' ? text.ar : text.en;
+  };
+
   return (
     <section className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <AnimatedSection animation="fade-up">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              {language === 'ar' ? settings.content.testimonialsTitle.ar : settings.content.testimonialsTitle.en}
+              {getLocalizedText(settings.content.testimonialsTitle)}
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
               {language === 'ar' ? 'اكتشف قصص نجاح عملائنا' : 'Discover our clients\' success stories'}

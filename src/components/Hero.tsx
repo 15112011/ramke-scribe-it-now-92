@@ -159,7 +159,7 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-900 via-green-900 to-emerald-900 overflow-hidden">
       {/* Particles Background */}
       <div 
         id="particles-js" 
@@ -168,7 +168,7 @@ export const Hero: React.FC = () => {
       ></div>
       
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 to-transparent z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 to-transparent z-10"></div>
 
       <div className="relative z-20 container mx-auto px-4 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -176,17 +176,7 @@ export const Hero: React.FC = () => {
           <div className="text-white" data-aos="fade-right">
             <div className="mb-6">
               <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-4">
-                {language === 'ar' ? (
-                  <>
-                    حقق حلمك بالجسم<br />
-                    <span className="text-emerald-400">المثالي</span> مع عمر أشرف
-                  </>
-                ) : (
-                  <>
-                    Transform Your Body,<br />
-                    Transform Your <span className="text-emerald-400">Life!</span>
-                  </>
-                )}
+                {getLocalizedText(settings.content.heroTitle)}
               </h1>
               
               {/* Typed.js animated subtitle */}
@@ -196,10 +186,7 @@ export const Hero: React.FC = () => {
             </div>
 
             <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed max-w-lg">
-              {language === 'ar' 
-                ? 'مدرب شخصي معتمد يساعدك في الوصول لأهدافك بأسرع وقت وأفضل النتائج'
-                : 'Certified personal trainer helping you reach your goals in the fastest time with the best results'
-              }
+              {getLocalizedText(settings.content.heroSubtitle)}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -218,7 +205,7 @@ export const Hero: React.FC = () => {
                 variant="outline" 
                 size="lg"
                 onClick={handleViewResults}
-                className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-slate-900 px-8 py-4 text-lg font-semibold rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-emerald-900 px-8 py-4 text-lg font-semibold rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300"
                 data-aos="zoom-in"
                 data-aos-delay="400"
               >
@@ -230,7 +217,7 @@ export const Hero: React.FC = () => {
             {/* Statistics Cards */}
             <div className="grid grid-cols-2 gap-6">
               <div 
-                className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/20"
+                className="bg-emerald-800/50 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/20"
                 data-aos="fade-up"
                 data-aos-delay="600"
               >
@@ -243,7 +230,7 @@ export const Hero: React.FC = () => {
               </div>
               
               <div 
-                className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/20"
+                className="bg-emerald-800/50 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/20"
                 data-aos="fade-up"
                 data-aos-delay="800"
               >
@@ -265,7 +252,7 @@ export const Hero: React.FC = () => {
               style={{ transformStyle: 'preserve-3d' }}
             >
               <img 
-                src="/lovable-uploads/7e94fd25-056b-4bd5-89d7-88024abc66d5.png"
+                src={settings.heroImage}
                 alt="Fitness Transformation"
                 className="w-full h-[600px] object-cover rounded-3xl"
               />
@@ -275,14 +262,14 @@ export const Hero: React.FC = () => {
                 {language === 'ar' ? '5+ سنوات خبرة' : '5+ Years Experience'}
               </div>
               
-              <div className="absolute bottom-6 right-6 bg-slate-900/80 backdrop-blur-sm text-emerald-400 px-4 py-2 rounded-full font-semibold border border-emerald-500/30">
+              <div className="absolute bottom-6 right-6 bg-emerald-900/80 backdrop-blur-sm text-emerald-400 px-4 py-2 rounded-full font-semibold border border-emerald-500/30">
                 {language === 'ar' ? '95% نسبة النجاح' : '95% Success Rate'}
               </div>
             </div>
 
             {/* Decorative elements */}
             <div className="absolute -top-4 -left-4 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute -bottom-4 -right-4 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute -bottom-4 -right-4 w-72 h-72 bg-green-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
           </div>
         </div>
       </div>

@@ -10,6 +10,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
 import { ComprehensiveAdmin } from './admin/ComprehensiveAdmin';
 import { SubscriptionPayment } from './SubscriptionPayment';
+import { ImageUpload } from './admin/ImageUpload';
 
 export const SectionManager: React.FC = () => {
   const { settings, updateSettings } = useAdmin();
@@ -42,7 +43,7 @@ export const SectionManager: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger value="legacy" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
-            Legacy Settings
+            Content & Images
           </TabsTrigger>
         </TabsList>
 
@@ -58,12 +59,22 @@ export const SectionManager: React.FC = () => {
           {/* Content Settings */}
           <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardHeader>
-              <CardTitle className="text-gray-900 dark:text-white">Content Settings</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">Content & Images Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Hero Content */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Hero Section</h3>
+                
+                <ImageUpload
+                  currentImage={tempSettings.heroImage}
+                  onImageChange={(imageUrl) => setTempSettings(prev => ({
+                    ...prev,
+                    heroImage: imageUrl
+                  }))}
+                  label="Hero Image"
+                />
+
                 <div>
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Title (Arabic)</label>
                   <Input
@@ -122,17 +133,6 @@ export const SectionManager: React.FC = () => {
                     }))}
                     className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                     rows={3}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Image URL</label>
-                  <Input
-                    value={tempSettings.heroImage}
-                    onChange={(e) => setTempSettings(prev => ({
-                      ...prev,
-                      heroImage: e.target.value
-                    }))}
-                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                   />
                 </div>
               </div>
