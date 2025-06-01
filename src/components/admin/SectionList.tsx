@@ -6,24 +6,15 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Edit, GripVertical, Eye, Paintbrush } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useSections } from '@/contexts/SectionsContext';
+import { useSections, SectionConfig } from '@/contexts/SectionsContext';
 import { useToast } from '@/hooks/use-toast';
 import { SectionEditor } from './SectionEditor';
 import { LiveSectionEditor } from './LiveSectionEditor';
 
-interface Section {
-  id: string;
-  name: string;
-  type: 'hero' | 'gallery' | 'stats' | 'about' | 'packages' | 'testimonials' | 'steps' | 'contact' | 'video' | 'results';
-  enabled: boolean;
-  order: number;
-  content: any;
-}
-
 export const SectionList: React.FC = () => {
   const { sections, toggleSection, reorderSections } = useSections();
   const { toast } = useToast();
-  const [editingSection, setEditingSection] = useState<Section | null>(null);
+  const [editingSection, setEditingSection] = useState<SectionConfig | null>(null);
   const [liveEditingSection, setLiveEditingSection] = useState<string | null>(null);
 
   const handleDragEnd = (result: any) => {
@@ -41,18 +32,7 @@ export const SectionList: React.FC = () => {
     });
   };
 
-  const convertToLegacySection = (section: any): Section => {
-    return {
-      id: section.id,
-      name: section.name,
-      type: section.type,
-      enabled: section.enabled,
-      order: section.order,
-      content: section.content || {}
-    };
-  };
-
-  const handleSaveSection = (updatedSection: Section) => {
+  const handleSaveSection = (updatedSection: SectionConfig) => {
     console.log('SectionList: Saving updated section', updatedSection);
     setEditingSection(null);
     
@@ -138,7 +118,7 @@ export const SectionList: React.FC = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setEditingSection(convertToLegacySection(section))}
+                                onClick={() => setEditingSection(section)}
                                 className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                 title="Advanced Editor"
                               >

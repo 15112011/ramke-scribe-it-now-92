@@ -172,10 +172,10 @@ export const LiveSectionEditor: React.FC<LiveSectionEditorProps> = ({ sectionId,
         transform: 'translate(-50%, -50%)',
         fontSize: element.style.fontSize,
         color: element.style.color,
-        fontWeight: element.style.fontWeight,
+        fontWeight: element.style.fontWeight as React.CSSProperties['fontWeight'],
         width: element.style.width,
         height: element.style.height,
-        userSelect: isEditMode ? 'none' : 'auto'
+        userSelect: (isEditMode ? 'none' : 'auto') as React.CSSProperties['userSelect']
       },
       onClick: () => handleElementClick(element.id),
       onMouseDown: (e: React.MouseEvent) => handleMouseDown(e, element.id)
