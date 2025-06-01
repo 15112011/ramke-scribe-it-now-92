@@ -44,6 +44,13 @@ export const EnhancedNavigation: React.FC = () => {
     return language === 'ar' ? text.ar : text.en;
   };
 
+  // Convert packages object to array for mapping
+  const packagesArray = [
+    { id: 'basic', ...settings.packages.basic },
+    { id: 'professional', ...settings.packages.professional },
+    { id: 'premium', ...settings.packages.premium }
+  ];
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
@@ -134,7 +141,7 @@ export const EnhancedNavigation: React.FC = () => {
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {settings.packages.map((pkg, index) => (
+                    {packagesArray.map((pkg, index) => (
                       <li key={index}>
                         <NavigationMenuLink asChild>
                           <button
