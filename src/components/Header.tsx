@@ -4,15 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Globe, Moon, Sun, Settings } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { isAdminMode, toggleAdminMode, settings } = useAdmin();
   const navigate = useNavigate();
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm transition-colors duration-300 backdrop-blur-sm">
