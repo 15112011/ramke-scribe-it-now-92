@@ -7,12 +7,20 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { AnimatedSection } from '@/components/AnimatedSection';
 
+interface Testimonial {
+  name: string;
+  content: string;
+  rating: number;
+  image?: string;
+  achievement?: string;
+}
+
 export const InteractiveTestimonials: React.FC = () => {
   const { language } = useLanguage();
   const { settings } = useAdmin();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
-  const testimonials = language === 'ar' ? settings.testimonials : [
+  const testimonials: Testimonial[] = language === 'ar' ? settings.testimonials : [
     {
       name: "Ahmed Hassan",
       content: "Omar transformed my life completely! I lost 25kg in 4 months and gained incredible strength. His personalized approach and constant support made all the difference. Highly recommend!",
@@ -65,12 +73,10 @@ export const InteractiveTestimonials: React.FC = () => {
             <Card className="bg-white dark:bg-gray-900 shadow-2xl border-0 overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative">
-                  {/* Background Pattern */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/10 dark:to-green-900/10"></div>
                   
                   <div className="relative p-12">
                     <div className="flex flex-col lg:flex-row items-center gap-8">
-                      {/* Testimonial Image */}
                       <div className="lg:w-1/3">
                         <div className="relative">
                           <img 
@@ -78,15 +84,14 @@ export const InteractiveTestimonials: React.FC = () => {
                             alt={currentTest.name}
                             className="w-48 h-48 object-cover rounded-full mx-auto shadow-2xl"
                           />
-                          <div className="absolute -bottom-4 -right-4 bg-green-500 text-white p-3 rounded-full shadow-xl">
+                          <div className="absolute -bottom-4 -right-4 bg-emerald-500 text-white p-3 rounded-full shadow-xl">
                             <Trophy className="w-6 h-6" />
                           </div>
                         </div>
                       </div>
 
-                      {/* Testimonial Content */}
                       <div className="lg:w-2/3 text-center lg:text-left">
-                        <Quote className="w-12 h-12 text-green-500 mb-6 mx-auto lg:mx-0" />
+                        <Quote className="w-12 h-12 text-emerald-500 mb-6 mx-auto lg:mx-0" />
                         
                         <blockquote className="text-2xl text-gray-700 dark:text-gray-300 leading-relaxed mb-6 italic">
                           "{currentTest.content}"
@@ -103,7 +108,7 @@ export const InteractiveTestimonials: React.FC = () => {
                             {currentTest.name}
                           </h3>
                           {currentTest.achievement && (
-                            <p className="text-green-600 dark:text-green-400 font-semibold">
+                            <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
                               {currentTest.achievement}
                             </p>
                           )}
@@ -122,7 +127,7 @@ export const InteractiveTestimonials: React.FC = () => {
               onClick={prevTestimonial}
               variant="outline"
               size="lg"
-              className="rounded-full w-14 h-14 p-0 border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
+              className="rounded-full w-14 h-14 p-0 border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white"
             >
               <ChevronLeft className="w-6 h-6" />
             </Button>
@@ -134,8 +139,8 @@ export const InteractiveTestimonials: React.FC = () => {
                   onClick={() => setCurrentTestimonial(index)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     index === currentTestimonial 
-                      ? 'bg-green-500 w-8' 
-                      : 'bg-gray-300 dark:bg-gray-600 hover:bg-green-300'
+                      ? 'bg-emerald-500 w-8' 
+                      : 'bg-gray-300 dark:bg-gray-600 hover:bg-emerald-300'
                   }`}
                 />
               ))}
@@ -145,7 +150,7 @@ export const InteractiveTestimonials: React.FC = () => {
               onClick={nextTestimonial}
               variant="outline"
               size="lg"
-              className="rounded-full w-14 h-14 p-0 border-green-500 text-green-600 hover:bg-green-500 hover:text-white"
+              className="rounded-full w-14 h-14 p-0 border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white"
             >
               <ChevronRight className="w-6 h-6" />
             </Button>
@@ -160,8 +165,8 @@ export const InteractiveTestimonials: React.FC = () => {
                     onClick={() => setCurrentTestimonial(i)}>
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-4">
-                      <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mr-4">
+                      <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div>
                       <div className="font-semibold text-gray-800 dark:text-white">{testimonial.name}</div>

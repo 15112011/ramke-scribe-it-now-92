@@ -12,6 +12,8 @@ import { InteractiveTestimonials } from '@/components/InteractiveTestimonials';
 import { VideoModal } from '@/components/VideoModal';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { ParticleBackground } from '@/components/ParticleBackground';
+import { BeforeAfterResults } from '@/components/BeforeAfterResults';
+
 const Index = () => {
   const {
     language,
@@ -35,39 +37,44 @@ const Index = () => {
     initAOS();
 
     // Initialize particles effect
-    const canvas = document.getElementById('particles-canvas');
+    const canvas = document.getElementById('particles-canvas') as HTMLCanvasElement;
     if (canvas) {
       const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      const particles = [];
-      for (let i = 0; i < 50; i++) {
-        particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          dx: (Math.random() - 0.5) * 2,
-          dy: (Math.random() - 0.5) * 2,
-          size: Math.random() * 3 + 1
-        });
+      if (ctx) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        for (let i = 0; i < 50; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            dx: (Math.random() - 0.5) * 2,
+            dy: (Math.random() - 0.5) * 2,
+            size: Math.random() * 3 + 1
+          });
+        }
+        
+        const animate = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = 'rgba(34, 197, 94, 0.1)';
+          particles.forEach(particle => {
+            particle.x += particle.dx;
+            particle.y += particle.dy;
+            if (particle.x < 0 || particle.x > canvas.width) particle.dx *= -1;
+            if (particle.y < 0 || particle.y > canvas.height) particle.dy *= -1;
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            ctx.fill();
+          });
+          requestAnimationFrame(animate);
+        };
+        animate();
       }
-      const animate = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'rgba(34, 197, 94, 0.1)';
-        particles.forEach(particle => {
-          particle.x += particle.dx;
-          particle.y += particle.dy;
-          if (particle.x < 0 || particle.x > canvas.width) particle.dx *= -1;
-          if (particle.y < 0 || particle.y > canvas.height) particle.dy *= -1;
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-          ctx.fill();
-        });
-        requestAnimationFrame(animate);
-      };
-      animate();
     }
   }, []);
-  return <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 relative overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 relative overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Enhanced Navigation */}
       <EnhancedNavigation />
       
@@ -77,12 +84,12 @@ const Index = () => {
       {/* Floating Action Button */}
       <FloatingActionButton />
 
-      {/* Hero Section with Video Background */}
-      <section id="home" className="relative py-32 bg-gradient-to-r from-green-600 via-green-500 to-emerald-500 dark:from-green-800 dark:via-green-700 dark:to-emerald-700 min-h-screen flex items-center overflow-hidden">
+      {/* Hero Section */}
+      <section id="home" className="relative py-32 bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-500 dark:from-emerald-800 dark:via-emerald-700 dark:to-green-700 min-h-screen flex items-center overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-300/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-300/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -96,22 +103,22 @@ const Index = () => {
               
               <h1 className="text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
                 {language === 'ar' ? settings.content.heroTitle : 'Transform Your Body, Transform Your Life'}
-                <span className="block text-emerald-200 typewriter">
+                <span className="block text-green-200 typewriter">
                   {language === 'ar' ? 'مع عمر أشرف' : 'with Omar Ashraf'}
                 </span>
               </h1>
               
-              <p className="text-2xl text-emerald-50 mb-10 leading-relaxed">
+              <p className="text-2xl text-green-50 mb-10 leading-relaxed">
                 {language === 'ar' ? settings.content.heroSubtitle : 'Certified personal trainer with 5+ years of experience helping clients achieve their dream physique through science-based training and nutrition.'}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start mb-12">
-                <Button size="lg" className="bg-white text-green-600 hover:bg-emerald-50 hover:text-green-700 text-xl px-10 py-6 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-xl font-bold rounded-full">
+                <Button size="lg" className="bg-white text-emerald-600 hover:bg-green-50 hover:text-emerald-700 text-xl px-10 py-6 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-xl font-bold rounded-full">
                   <PlayCircle className="w-6 h-6 mr-3" />
                   {language === 'ar' ? settings.buttons.startJourney : 'Start Your Transformation'}
                 </Button>
                 
-                <Button size="lg" variant="outline" className="text-xl px-10 py-6 border-2 border-white text-white hover:bg-white hover:text-green-600 transform transition-all duration-300 hover:scale-105 shadow-xl font-bold rounded-full">
+                <Button size="lg" variant="outline" className="text-xl px-10 py-6 border-2 border-white text-white hover:bg-white hover:text-emerald-600 transform transition-all duration-300 hover:scale-105 shadow-xl font-bold rounded-full">
                   <Trophy className="w-6 h-6 mr-3" />
                   {language === 'ar' ? settings.buttons.viewResults : 'View Success Stories'}
                 </Button>
@@ -140,7 +147,7 @@ const Index = () => {
                   <img src={settings.heroImage} alt="Omar Ashraf - Elite Personal Trainer" className="rounded-3xl shadow-2xl w-full max-w-md mx-auto transform transition-all duration-500 hover:scale-105 hover:shadow-3xl" />
                   
                   {/* Floating Elements */}
-                  <div className="absolute -top-6 -right-6 bg-white/90 backdrop-blur-sm text-green-600 p-4 rounded-2xl animate-bounce shadow-xl">
+                  <div className="absolute -top-6 -right-6 bg-white/90 backdrop-blur-sm text-emerald-600 p-4 rounded-2xl animate-bounce shadow-xl">
                     <Dumbbell className="w-8 h-8" />
                   </div>
                   
@@ -148,13 +155,13 @@ const Index = () => {
                     <Star className="w-8 h-8" />
                   </div>
                   
-                  <div className="absolute top-1/2 -left-8 bg-white/90 backdrop-blur-sm text-green-600 p-3 rounded-xl animate-bounce delay-500 shadow-lg">
+                  <div className="absolute top-1/2 -left-8 bg-white/90 backdrop-blur-sm text-emerald-600 p-3 rounded-xl animate-bounce delay-500 shadow-lg">
                     <Heart className="w-6 h-6" />
                   </div>
                 </div>
                 
                 {/* Glowing Background */}
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-green-400 rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
               </div>
             </AnimatedSection>
           </div>
@@ -168,6 +175,9 @@ const Index = () => {
 
       {/* Progress Tracker */}
       <ProgressTracker />
+
+      {/* Before/After Results Section */}
+      <BeforeAfterResults />
 
       {/* Enhanced Stats Section */}
       <AnimatedSection animation="fade-up">
@@ -183,37 +193,24 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-              {[{
-              icon: Users,
-              value: "500+",
-              label: language === 'ar' ? 'عميل متحول' : 'Transformed Clients',
-              color: 'text-blue-500'
-            }, {
-              icon: Trophy,
-              value: "98%",
-              label: language === 'ar' ? 'نسبة النجاح' : 'Success Rate',
-              color: 'text-yellow-500'
-            }, {
-              icon: Award,
-              value: "50+",
-              label: language === 'ar' ? 'جائزة وشهادة' : 'Awards & Certifications',
-              color: 'text-purple-500'
-            }, {
-              icon: Clock,
-              value: "24/7",
-              label: language === 'ar' ? 'دعم مستمر' : 'Continuous Support',
-              color: 'text-green-500'
-            }].map((stat, index) => <AnimatedSection key={index} animation="scale" delay={index * 150}>
+              {[
+                { icon: Users, value: "500+", label: language === 'ar' ? 'عميل متحول' : 'Transformed Clients', color: 'text-emerald-500' },
+                { icon: Trophy, value: "98%", label: language === 'ar' ? 'نسبة النجاح' : 'Success Rate', color: 'text-emerald-500' },
+                { icon: Award, value: "50+", label: language === 'ar' ? 'جائزة وشهادة' : 'Awards & Certifications', color: 'text-emerald-500' },
+                { icon: Clock, value: "24/7", label: language === 'ar' ? 'دعم مستمر' : 'Continuous Support', color: 'text-emerald-500' }
+              ].map((stat, index) => (
+                <AnimatedSection key={index} animation="scale" delay={index * 150}>
                   <div className="text-center group hover:scale-110 transition-transform duration-300">
-                    <div className={`bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transform transition-all duration-300 group-hover:shadow-2xl shadow-lg ${stat.color}`}>
+                    <div className={`bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-800/20 dark:to-green-800/20 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transform transition-all duration-300 group-hover:shadow-2xl shadow-lg ${stat.color}`}>
                       <stat.icon className="w-10 h-10" />
                     </div>
-                    <div className="text-4xl font-bold text-gray-800 dark:text-white mb-2 counter" data-target={stat.value}>
+                    <div className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
                       {stat.value}
                     </div>
                     <div className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</div>
                   </div>
-                </AnimatedSection>)}
+                </AnimatedSection>
+              ))}
             </div>
           </div>
         </section>
@@ -520,11 +517,11 @@ const Index = () => {
       <CountdownTimer />
 
       {/* Enhanced Contact Section */}
-      <section id="contact" className="py-20 bg-gradient-to-br from-green-600 via-green-500 to-emerald-500 dark:from-green-800 dark:via-green-700 dark:to-emerald-700 text-white relative overflow-hidden">
+      <section id="contact" className="py-20 bg-gradient-to-br from-emerald-600 via-emerald-500 to-green-500 dark:from-emerald-800 dark:via-emerald-700 dark:to-green-700 text-white relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-300/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-300/5 rounded-full blur-3xl"></div>
         </div>
         
         <div className="container mx-auto px-4 text-center relative z-10">
@@ -539,12 +536,12 @@ const Index = () => {
           
           <AnimatedSection animation="scale" delay={200}>
             <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-lg mx-auto">
-              <Button size="lg" className="bg-white text-green-600 hover:bg-emerald-50 hover:text-green-700 text-xl px-10 py-6 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1" onClick={() => window.open(settings.socialLinks.whatsapp, '_blank')}>
+              <Button size="lg" className="bg-white text-emerald-600 hover:bg-green-50 hover:text-emerald-700 text-xl px-10 py-6 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1" onClick={() => window.open(settings.socialLinks.whatsapp, '_blank')}>
                 <MessageCircle className="w-6 h-6 mr-3" />
                 {language === 'ar' ? settings.buttons.whatsapp : 'WhatsApp Now'}
               </Button>
               
-              <Button size="lg" variant="outline" className="text-xl px-10 py-6 border-2 border-white text-white hover:bg-white hover:text-green-600 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1" onClick={() => window.open(`tel:${settings.socialLinks.phone}`, '_blank')}>
+              <Button size="lg" variant="outline" className="text-xl px-10 py-6 border-2 border-white text-white hover:bg-white hover:text-emerald-600 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1" onClick={() => window.open(`tel:${settings.socialLinks.phone}`, '_blank')}>
                 <Phone className="w-6 h-6 mr-3" />
                 {language === 'ar' ? settings.buttons.callMe : 'Call Direct'}
               </Button>
@@ -729,6 +726,8 @@ const Index = () => {
 
       {/* Back to Top Button */}
       
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
