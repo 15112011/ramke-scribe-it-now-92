@@ -114,7 +114,7 @@ export const ComprehensiveAdmin: React.FC = () => {
           <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-xl p-6 border border-orange-200/50 dark:border-orange-800/50">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                <Palette className="w-4 h-4 text-white" />
+                <Settings className="w-4 h-4 text-white" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Legacy Content Settings</h2>
             </div>
