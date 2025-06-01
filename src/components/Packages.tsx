@@ -4,48 +4,42 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Star } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAdmin } from '@/contexts/AdminContext';
 import { AnimatedSection } from '@/components/AnimatedSection';
+import { useNavigate } from 'react-router-dom';
 
 export const Packages: React.FC = () => {
   const { language } = useLanguage();
+  const { settings } = useAdmin();
+  const navigate = useNavigate();
 
   const packages = [
     {
-      name: language === 'ar' ? 'الباقة الأساسية' : 'Basic Package',
-      price: language === 'ar' ? '500 ريال/شهر' : '$150/month',
-      features: [
-        language === 'ar' ? '3 جلسات في الأسبوع' : '3 sessions per week',
-        language === 'ar' ? 'برنامج تدريبي مخصص' : 'Custom workout plan',
-        language === 'ar' ? 'إرشادات التغذية الأساسية' : 'Basic nutrition guidance',
-        language === 'ar' ? 'دعم عبر الواتساب' : 'WhatsApp support'
-      ],
+      id: 'basic',
+      name: language === 'ar' ? settings.packages.basic.name.ar : settings.packages.basic.name.en,
+      price: settings.packages.basic.price,
+      features: settings.packages.basic.features.map(f => language === 'ar' ? f.ar : f.en),
       popular: false
     },
     {
-      name: language === 'ar' ? 'الباقة المتقدمة' : 'Premium Package',
-      price: language === 'ar' ? '800 ريال/شهر' : '$250/month',
-      features: [
-        language === 'ar' ? '5 جلسات في الأسبوع' : '5 sessions per week',
-        language === 'ar' ? 'برنامج تدريبي وتغذوي مفصل' : 'Detailed workout & nutrition plan',
-        language === 'ar' ? 'متابعة يومية' : 'Daily follow-up',
-        language === 'ar' ? 'تحليل تركيب الجسم' : 'Body composition analysis',
-        language === 'ar' ? 'خطة المكملات الغذائية' : 'Supplement plan'
-      ],
+      id: 'professional',
+      name: language === 'ar' ? settings.packages.professional.name.ar : settings.packages.professional.name.en,
+      price: settings.packages.professional.price,
+      features: settings.packages.professional.features.map(f => language === 'ar' ? f.ar : f.en),
       popular: true
     },
     {
-      name: language === 'ar' ? 'باقة التحول الكامل' : 'Transformation Package',
-      price: language === 'ar' ? '1200 ريال/شهر' : '$350/month',
-      features: [
-        language === 'ar' ? 'تدريب يومي' : 'Daily training',
-        language === 'ar' ? 'خطة تغذية شاملة' : 'Comprehensive nutrition plan',
-        language === 'ar' ? 'متابعة 24/7' : '24/7 support',
-        language === 'ar' ? 'جلسات تحفيزية' : 'Motivational sessions',
-        language === 'ar' ? 'ضمان النتائج' : 'Results guarantee'
-      ],
+      id: 'premium',
+      name: language === 'ar' ? settings.packages.premium.name.ar : settings.packages.premium.name.en,
+      price: settings.packages.premium.price,
+      features: settings.packages.premium.features.map(f => language === 'ar' ? f.ar : f.en),
       popular: false
     }
   ];
+
+  const handlePackageSelect = (packageId: string) => {
+    navigate('/subscription', { state: { selectedPackage: packageId } });
+  };
 
   return (
     <section id="packages" className="py-20 bg-gray-50 dark:bg-gray-800">
@@ -53,7 +47,7 @@ export const Packages: React.FC = () => {
         <AnimatedSection animation="fade-up">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-              {language === 'ar' ? 'باقات التدريب' : 'Training Packages'}
+              {language === 'ar' ? settings.content.packagesTitle.ar : settings.content.packagesTitle.en}
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
               {language === 'ar' ? 'اختر الباقة المناسبة لأهدافك' : 'Choose the package that fits your goals'}
@@ -64,12 +58,12 @@ export const Packages: React.FC = () => {
         <div className="grid md:grid-cols-3 gap-8">
           {packages.map((pkg, index) => (
             <AnimatedSection key={index} animation="fade-up" delay={index * 100}>
-              <Card className={`relative ${pkg.popular ? 'ring-2 ring-green-500 scale-105' : ''} hover:shadow-xl transition-all duration-300`}>
+              <Card className={`relative ${pkg.popular ? 'ring-2 ring-green-500 scale-105' : ''} hover:shadow-xl transition-all duration-300 cursor-pointer`}>
                 {pkg.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <div className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
                       <Star className="w-4 h-4 mr-1" />
-                      {language === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
+                      {language === 'ar' ? settings.packageLabels.mostPopular.ar : settings.packageLabels.mostPopular.en}
                     </div>
                   </div>
                 )}
@@ -79,7 +73,7 @@ export const Packages: React.FC = () => {
                     {pkg.name}
                   </CardTitle>
                   <div className="text-3xl font-bold text-green-500 mt-4">
-                    {pkg.price}
+                    {pkg.price} {language === 'ar' ? 'جنيه' : 'EGP'}
                   </div>
                 </CardHeader>
 
@@ -94,10 +88,11 @@ export const Packages: React.FC = () => {
                   </ul>
                   
                   <Button 
+                    onClick={() => handlePackageSelect(pkg.id)}
                     className={`w-full ${pkg.popular ? 'bg-green-500 hover:bg-green-600' : ''}`}
                     variant={pkg.popular ? 'default' : 'outline'}
                   >
-                    {language === 'ar' ? 'اختر هذه الباقة' : 'Choose This Package'}
+                    {language === 'ar' ? settings.buttons.choosePackage.ar : settings.buttons.choosePackage.en}
                   </Button>
                 </CardContent>
               </Card>

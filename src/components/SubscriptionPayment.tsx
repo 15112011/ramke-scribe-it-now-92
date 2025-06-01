@@ -1,17 +1,13 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Crown, Star, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { createClient } from '@supabase/supabase-js';
 import { SubscriptionFlow } from '@/components/SubscriptionFlow';
-
-// Initialize Supabase client with environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useAdmin } from '@/contexts/AdminContext';
 
 interface Plan {
   id: string;
@@ -23,53 +19,6 @@ interface Plan {
   popular?: boolean;
 }
 
-const plans: Plan[] = [
-  {
-    id: 'basic',
-    name: 'Basic',
-    price: 799,
-    interval: 'month',
-    icon: <Zap className="w-6 h-6" />,
-    features: [
-      'Up to 5 sections',
-      'Basic templates',
-      'Email support',
-      'Mobile responsive'
-    ]
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: 1999,
-    interval: 'month',
-    icon: <Star className="w-6 h-6" />,
-    popular: true,
-    features: [
-      'Unlimited sections',
-      'Premium templates',
-      'Priority support',
-      'Advanced analytics',
-      'Custom domain',
-      'SEO optimization'
-    ]
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 4999,
-    interval: 'month',
-    icon: <Crown className="w-6 h-6" />,
-    features: [
-      'Everything in Premium',
-      'White-label solution',
-      'API access',
-      'Dedicated support',
-      'Custom integrations',
-      'Advanced security'
-    ]
-  }
-];
-
 export const SubscriptionPayment: React.FC = () => {
   const [loading, setLoading] = useState<string | null>(null);
   const [showCustomFlow, setShowCustomFlow] = useState(false);
@@ -79,6 +28,36 @@ export const SubscriptionPayment: React.FC = () => {
     price: string;
   } | null>(null);
   const { toast } = useToast();
+  const { language } = useLanguage();
+  const { settings } = useAdmin();
+
+  const plans: Plan[] = [
+    {
+      id: 'basic',
+      name: language === 'ar' ? settings.packages.basic.name.ar : settings.packages.basic.name.en,
+      price: parseInt(settings.packages.basic.price),
+      interval: 'month',
+      icon: <Zap className="w-6 h-6" />,
+      features: settings.packages.basic.features.map(f => language === 'ar' ? f.ar : f.en)
+    },
+    {
+      id: 'professional',
+      name: language === 'ar' ? settings.packages.professional.name.ar : settings.packages.professional.name.en,
+      price: parseInt(settings.packages.professional.price),
+      interval: 'month',
+      icon: <Star className="w-6 h-6" />,
+      popular: true,
+      features: settings.packages.professional.features.map(f => language === 'ar' ? f.ar : f.en)
+    },
+    {
+      id: 'premium',
+      name: language === 'ar' ? settings.packages.premium.name.ar : settings.packages.premium.name.en,
+      price: parseInt(settings.packages.premium.price),
+      interval: 'month',
+      icon: <Crown className="w-6 h-6" />,
+      features: settings.packages.premium.features.map(f => language === 'ar' ? f.ar : f.en)
+    }
+  ];
 
   const handleSubscribe = async (planId: string) => {
     const plan = plans.find(p => p.id === planId);
@@ -87,7 +66,7 @@ export const SubscriptionPayment: React.FC = () => {
     setSelectedPlanData({
       id: plan.id,
       name: plan.name,
-      price: `$${(plan.price / 100).toFixed(2)}`
+      price: `${plan.price} ${language === 'ar' ? 'جنيه' : 'EGP'}`
     });
     setShowCustomFlow(true);
   };
@@ -106,11 +85,16 @@ export const SubscriptionPayment: React.FC = () => {
               }}
               className="mb-4"
             >
-              ← Back to Plans
+              ← {language === 'ar' ? 'العودة للباقات' : 'Back to Plans'}
             </Button>
-            <h1 className="text-4xl font-bold mb-4">Complete Your Application</h1>
+            <h1 className="text-4xl font-bold mb-4">
+              {language === 'ar' ? 'أكمل طلبك' : 'Complete Your Order'}
+            </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Apply for {selectedPlanData.name} coaching with Omar
+              {language === 'ar' 
+                ? `تقديم طلب للحصول على باقة ${selectedPlanData.name}` 
+                : `Apply for ${selectedPlanData.name} package`
+              }
             </p>
           </div>
           <SubscriptionFlow 
@@ -123,104 +107,18 @@ export const SubscriptionPayment: React.FC = () => {
     );
   }
 
-  // Show configuration message if Supabase is not configured
-  if (!supabase) {
-    return (
-      <div className="space-y-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Choose Your Plan
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Unlock premium features with our subscription plans
-          </p>
-        </div>
-
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
-            Configuration Required
-          </h3>
-          <p className="text-yellow-700 dark:text-yellow-300">
-            To enable payments, please configure your Supabase environment variables (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY).
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-50">
-          {plans.map((plan) => (
-            <Card key={plan.id} className="relative">
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-blue-500 text-white px-3 py-1">
-                    Most Popular
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-2">
-                  <div className="p-3 rounded-full bg-gray-100 text-gray-600">
-                    {plan.icon}
-                  </div>
-                </div>
-                <CardTitle className="text-xl font-bold">
-                  {plan.name}
-                </CardTitle>
-                <div className="mt-2">
-                  <span className="text-3xl font-bold">
-                    ${(plan.price / 100).toFixed(2)}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    /{plan.interval}
-                  </span>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <ul className="space-y-2">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center text-sm">
-                      <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <Button disabled className="w-full bg-gray-400">
-                  Configure Supabase First
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Choose Your Plan
+          {language === 'ar' ? 'اختر باقتك' : 'Choose Your Plan'}
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Unlock premium features with our subscription plans
+          {language === 'ar' 
+            ? 'اختر الباقة التي تناسب أهدافك' 
+            : 'Choose the package that fits your goals'
+          }
         </p>
-      </div>
-
-      {/* Custom Training Option */}
-      <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl p-8 text-white text-center mb-8">
-        <h3 className="text-2xl font-bold mb-4">🏆 Personal Training with Omar</h3>
-        <p className="text-emerald-100 mb-6">
-          Get exclusive one-on-one coaching, personalized meal plans, and 24/7 support
-        </p>
-        <Button 
-          onClick={() => setShowCustomFlow(true)}
-          className="bg-white text-emerald-600 hover:bg-emerald-50 font-semibold px-8 py-3"
-        >
-          Apply for Personal Training
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -236,7 +134,7 @@ export const SubscriptionPayment: React.FC = () => {
             {plan.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <Badge className="bg-blue-500 text-white px-3 py-1">
-                  Most Popular
+                  {language === 'ar' ? 'الأكثر شعبية' : 'Most Popular'}
                 </Badge>
               </div>
             )}
@@ -256,10 +154,10 @@ export const SubscriptionPayment: React.FC = () => {
               </CardTitle>
               <div className="mt-2">
                 <span className="text-3xl font-bold">
-                  ${(plan.price / 100).toFixed(2)}
+                  {plan.price} {language === 'ar' ? 'جنيه' : 'EGP'}
                 </span>
                 <span className="text-gray-600 dark:text-gray-400">
-                  /{plan.interval}
+                  /{language === 'ar' ? 'شهر' : 'month'}
                 </span>
               </div>
             </CardHeader>
@@ -285,7 +183,10 @@ export const SubscriptionPayment: React.FC = () => {
                     : 'bg-gray-800 hover:bg-gray-900'
                 }`}
               >
-                {loading === plan.id ? 'Processing...' : 'Subscribe Now'}
+                {loading === plan.id 
+                  ? (language === 'ar' ? 'جاري التحميل...' : 'Loading...') 
+                  : (language === 'ar' ? 'اختر هذه الباقة' : 'Choose Package')
+                }
               </Button>
             </CardContent>
           </Card>
@@ -293,8 +194,12 @@ export const SubscriptionPayment: React.FC = () => {
       </div>
       
       <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>All plans include a 7-day free trial. Cancel anytime.</p>
-        <p>Secure payments powered by Stripe.</p>
+        <p>
+          {language === 'ar' 
+            ? 'جميع الباقات تشمل ضمان الجودة والمتابعة الكاملة' 
+            : 'All packages include quality guarantee and full follow-up'
+          }
+        </p>
       </div>
     </div>
   );

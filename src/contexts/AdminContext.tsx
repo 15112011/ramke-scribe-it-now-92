@@ -1,14 +1,34 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+interface MultilingualText {
+  ar: string;
+  en: string;
+}
+
 interface AdminSettings {
   heroImage: string;
   galleryImages: string[];
-  aboutText: string;
+  aboutText: MultilingualText;
   packages: {
-    basic: { price: string; features: string[] };
-    professional: { price: string; features: string[] };
-    premium: { price: string; features: string[] };
+    basic: { 
+      price: string; 
+      features: MultilingualText[];
+      name: MultilingualText;
+      description: MultilingualText;
+    };
+    professional: { 
+      price: string; 
+      features: MultilingualText[];
+      name: MultilingualText;
+      description: MultilingualText;
+    };
+    premium: { 
+      price: string; 
+      features: MultilingualText[];
+      name: MultilingualText;
+      description: MultilingualText;
+    };
   };
   socialLinks: {
     whatsapp: string;
@@ -20,67 +40,90 @@ interface AdminSettings {
     successRate: string;
     experience: string;
   };
-  // New comprehensive content settings
   content: {
-    heroTitle: string;
-    heroSubtitle: string;
-    aboutTitle: string;
-    packagesTitle: string;
-    testimonialsTitle: string;
-    stepsTitle: string;
-    contactTitle: string;
-    contactSubtitle: string;
-    footerDescription: string;
-    companyName: string;
+    heroTitle: MultilingualText;
+    heroSubtitle: MultilingualText;
+    aboutTitle: MultilingualText;
+    packagesTitle: MultilingualText;
+    testimonialsTitle: MultilingualText;
+    stepsTitle: MultilingualText;
+    contactTitle: MultilingualText;
+    contactSubtitle: MultilingualText;
+    footerDescription: MultilingualText;
+    companyName: MultilingualText;
     logo: string;
     favIcon: string;
   };
   sectionTitles: {
-    home: string;
-    about: string;
-    packages: string;
-    contact: string;
-    gallery: string;
-    services: string;
-    quickLinks: string;
-    followMe: string;
+    home: MultilingualText;
+    about: MultilingualText;
+    packages: MultilingualText;
+    contact: MultilingualText;
+    gallery: MultilingualText;
+    services: MultilingualText;
+    quickLinks: MultilingualText;
+    followMe: MultilingualText;
   };
   buttons: {
-    startJourney: string;
-    viewResults: string;
-    choosePackage: string;
-    whatsapp: string;
-    callMe: string;
-    admin: string;
-    saveChanges: string;
+    startJourney: MultilingualText;
+    viewResults: MultilingualText;
+    choosePackage: MultilingualText;
+    whatsapp: MultilingualText;
+    callMe: MultilingualText;
+    admin: MultilingualText;
+    saveChanges: MultilingualText;
   };
   packageLabels: {
-    basic: string;
-    professional: string;
-    premium: string;
-    mostPopular: string;
+    basic: MultilingualText;
+    professional: MultilingualText;
+    premium: MultilingualText;
+    mostPopular: MultilingualText;
   };
   specialties: {
     certifications: {
-      title: string;
-      items: string[];
+      title: MultilingualText;
+      items: MultilingualText[];
     };
     specializations: {
-      title: string;
-      items: string[];
+      title: MultilingualText;
+      items: MultilingualText[];
     };
   };
   steps: Array<{
     step: string;
-    title: string;
-    description: string;
+    title: MultilingualText;
+    description: MultilingualText;
   }>;
   testimonials: Array<{
     name: string;
-    content: string;
+    content: MultilingualText;
     rating: number;
   }>;
-  services: string[];
+  services: MultilingualText[];
+  resultsPage: {
+    title: MultilingualText;
+    subtitle: MultilingualText;
+    cards: Array<{
+      title: MultilingualText;
+      description: MultilingualText;
+      image: string;
+      stats: {
+        before: string;
+        after: string;
+        duration: MultilingualText;
+      };
+    }>;
+  };
+  paymentMethods: {
+    instapay: {
+      number: string;
+      name: string;
+    };
+    vodafoneCash: {
+      number: string;
+      name: string;
+    };
+  };
 }
 
 interface AdminContextType {
@@ -98,36 +141,45 @@ const defaultSettings: AdminSettings = {
     "/lovable-uploads/8fb7f786-bdcb-4dac-a303-8405af22960b.png",
     "/lovable-uploads/37b67d4e-4f06-4346-b807-2caeee7427eb.png"
   ],
-  aboutText: "مدرب شخصي معتمد مع خبرة واسعة في مجال اللياقة البدنية والتغذية. هدفي هو مساعدتك في تحقيق أهدافك والوصول إلى أفضل نسخة من نفسك.",
+  aboutText: {
+    ar: "مدرب شخصي معتمد مع خبرة واسعة في مجال اللياقة البدنية والتغذية. هدفي هو مساعدتك في تحقيق أهدافك والوصول إلى أفضل نسخة من نفسك.",
+    en: "Certified personal trainer with extensive experience in fitness and nutrition. My goal is to help you achieve your goals and reach the best version of yourself."
+  },
   packages: {
     basic: {
       price: "1200",
+      name: { ar: "المبتدئ", en: "Basic" },
+      description: { ar: "باقة مناسبة للمبتدئين", en: "Perfect package for beginners" },
       features: [
-        "برنامج تدريبي لمدة شهر",
-        "نظام غذائي بسيط",
-        "متابعة أسبوعية",
-        "دعم عبر الواتساب"
+        { ar: "برنامج تدريبي لمدة شهر", en: "1-month training program" },
+        { ar: "نظام غذائي بسيط", en: "Simple nutrition plan" },
+        { ar: "متابعة أسبوعية", en: "Weekly follow-up" },
+        { ar: "دعم عبر الواتساب", en: "WhatsApp support" }
       ]
     },
     professional: {
       price: "2000",
+      name: { ar: "المحترف", en: "Professional" },
+      description: { ar: "باقة شاملة للمحترفين", en: "Comprehensive package for professionals" },
       features: [
-        "برنامج تدريبي لمدة شهرين",
-        "نظام غذائي مفصل",
-        "متابعة يومية",
-        "مكالمات أسبوعية",
-        "برنامج مكملات"
+        { ar: "برنامج تدريبي لمدة شهرين", en: "2-month training program" },
+        { ar: "نظام غذائي مفصل", en: "Detailed nutrition plan" },
+        { ar: "متابعة يومية", en: "Daily follow-up" },
+        { ar: "مكالمات أسبوعية", en: "Weekly calls" },
+        { ar: "برنامج مكملات", en: "Supplement program" }
       ]
     },
     premium: {
       price: "3200",
+      name: { ar: "المتميز", en: "Premium" },
+      description: { ar: "الباقة الأكثر شمولية", en: "Most comprehensive package" },
       features: [
-        "برنامج تدريبي لمدة 3 شهور",
-        "نظام غذائي شامل",
-        "متابعة على مدار الساعة",
-        "جلسات تدريب أونلاين",
-        "برنامج مكملات VIP",
-        "ضمان النتائج"
+        { ar: "برنامج تدريبي لمدة 3 شهور", en: "3-month training program" },
+        { ar: "نظام غذائي شامل", en: "Comprehensive nutrition plan" },
+        { ar: "متابعة على مدار الساعة", en: "24/7 follow-up" },
+        { ar: "جلسات تدريب أونلاين", en: "Online training sessions" },
+        { ar: "برنامج مكملات VIP", en: "VIP supplement program" },
+        { ar: "ضمان النتائج", en: "Results guarantee" }
       ]
     }
   },
@@ -142,78 +194,157 @@ const defaultSettings: AdminSettings = {
     experience: "5"
   },
   content: {
-    heroTitle: "حقق حلمك بالجسم المثالي مع عمر أشرف",
-    heroSubtitle: "مدرب شخصي معتمد يساعدك في الوصول لأهدافك بأسرع وقت وأفضل النتائج",
-    aboutTitle: "عمر أشرف",
-    packagesTitle: "اختر الباقة التي تناسبك",
-    testimonialsTitle: "آراء العملاء",
-    stepsTitle: "أربع خطوات لتحقيق الهدف معاً",
-    contactTitle: "تواصل معي الآن",
-    contactSubtitle: "ابدأ رحلتك نحو الجسم المثالي اليوم",
-    footerDescription: "مدرب شخصي معتمد متخصص في تحقيق أهداف اللياقة البدنية",
-    companyName: "عمر أشرف - المدرب الشخصي",
+    heroTitle: {
+      ar: "حقق حلمك بالجسم المثالي مع عمر أشرف",
+      en: "Achieve your dream body with Omar Ashraf"
+    },
+    heroSubtitle: {
+      ar: "مدرب شخصي معتمد يساعدك في الوصول لأهدافك بأسرع وقت وأفضل النتائج",
+      en: "Certified personal trainer helping you reach your goals faster with the best results"
+    },
+    aboutTitle: { ar: "عمر أشرف", en: "Omar Ashraf" },
+    packagesTitle: { ar: "اختر الباقة التي تناسبك", en: "Choose the package that suits you" },
+    testimonialsTitle: { ar: "آراء العملاء", en: "Client Reviews" },
+    stepsTitle: { ar: "أربع خطوات لتحقيق الهدف معاً", en: "Four steps to achieve the goal together" },
+    contactTitle: { ar: "تواصل معي الآن", en: "Contact me now" },
+    contactSubtitle: { ar: "ابدأ رحلتك نحو الجسم المثالي اليوم", en: "Start your journey to the perfect body today" },
+    footerDescription: { ar: "مدرب شخصي معتمد متخصص في تحقيق أهداف اللياقة البدنية", en: "Certified personal trainer specialized in achieving fitness goals" },
+    companyName: { ar: "عمر أشرف - المدرب الشخصي", en: "Omar Ashraf - Personal Trainer" },
     logo: "/lovable-uploads/8d1f7dd8-67c5-4ab2-8ea3-d655ef1cb613.png",
     favIcon: "/favicon.ico"
   },
   sectionTitles: {
-    home: "الرئيسية",
-    about: "من أنا",
-    packages: "الباقات",
-    contact: "تواصل معي",
-    gallery: "صور التدريب",
-    services: "الخدمات",
-    quickLinks: "روابط سريعة",
-    followMe: "تابعني"
+    home: { ar: "الرئيسية", en: "Home" },
+    about: { ar: "من أنا", en: "About" },
+    packages: { ar: "الباقات", en: "Packages" },
+    contact: { ar: "تواصل معي", en: "Contact" },
+    gallery: { ar: "صور التدريب", en: "Training Gallery" },
+    services: { ar: "الخدمات", en: "Services" },
+    quickLinks: { ar: "روابط سريعة", en: "Quick Links" },
+    followMe: { ar: "تابعني", en: "Follow Me" }
   },
   buttons: {
-    startJourney: "ابدأ رحلتك",
-    viewResults: "شاهد النتائج",
-    choosePackage: "اختر هذه الباقة",
-    whatsapp: "واتساب",
-    callMe: "اتصل بي",
-    admin: "لوحة التحكم",
-    saveChanges: "حفظ التغييرات"
+    startJourney: { ar: "ابدأ رحلتك", en: "Start Journey" },
+    viewResults: { ar: "شاهد النتائج", en: "View Results" },
+    choosePackage: { ar: "اختر هذه الباقة", en: "Choose Package" },
+    whatsapp: { ar: "واتساب", en: "WhatsApp" },
+    callMe: { ar: "اتصل بي", en: "Call Me" },
+    admin: { ar: "لوحة التحكم", en: "Admin Panel" },
+    saveChanges: { ar: "حفظ التغييرات", en: "Save Changes" }
   },
   packageLabels: {
-    basic: "المبتدئ",
-    professional: "المحترف",
-    premium: "المتميز",
-    mostPopular: "الأكثر شعبية"
+    basic: { ar: "المبتدئ", en: "Basic" },
+    professional: { ar: "المحترف", en: "Professional" },
+    premium: { ar: "المتميز", en: "Premium" },
+    mostPopular: { ar: "الأكثر شعبية", en: "Most Popular" }
   },
   specialties: {
     certifications: {
-      title: "شهادات واعتمادات",
+      title: { ar: "شهادات واعتمادات", en: "Certifications" },
       items: [
-        "مدرب شخصي معتمد",
-        "أخصائي تغذية",
-        "خبرة +5 سنوات"
+        { ar: "مدرب شخصي معتمد", en: "Certified Personal Trainer" },
+        { ar: "أخصائي تغذية", en: "Nutrition Specialist" },
+        { ar: "خبرة +5 سنوات", en: "+5 Years Experience" }
       ]
     },
     specializations: {
-      title: "التخصصات",
+      title: { ar: "التخصصات", en: "Specializations" },
       items: [
-        "بناء العضلات",
-        "حرق الدهون",
-        "اللياقة العامة"
+        { ar: "بناء العضلات", en: "Muscle Building" },
+        { ar: "حرق الدهون", en: "Fat Loss" },
+        { ar: "اللياقة العامة", en: "General Fitness" }
       ]
     }
   },
   steps: [
-    { step: "1", title: "التواصل", description: "تواصل معي عبر الواتساب" },
-    { step: "2", title: "التقييم", description: "تقييم حالتك الصحية" },
-    { step: "3", title: "البرنامج", description: "وضع برنامج مخصص لك" },
-    { step: "4", title: "النتائج", description: "تحقيق أهدافك المرجوة" }
+    { 
+      step: "1", 
+      title: { ar: "التواصل", en: "Contact" }, 
+      description: { ar: "تواصل معي عبر الواتساب", en: "Contact me via WhatsApp" } 
+    },
+    { 
+      step: "2", 
+      title: { ar: "التقييم", en: "Assessment" }, 
+      description: { ar: "تقييم حالتك الصحية", en: "Assess your health condition" } 
+    },
+    { 
+      step: "3", 
+      title: { ar: "البرنامج", en: "Program" }, 
+      description: { ar: "وضع برنامج مخصص لك", en: "Create a custom program for you" } 
+    },
+    { 
+      step: "4", 
+      title: { ar: "النتائج", en: "Results" }, 
+      description: { ar: "تحقيق أهدافك المرجوة", en: "Achieve your desired goals" } 
+    }
   ],
   testimonials: [
-    { name: "عميل 1", content: "تجربة رائعة مع المدرب عمر، حقق لي نتائج مذهلة في وقت قصير. أنصح بشدة بالتعامل معه.", rating: 5 },
-    { name: "عميل 2", content: "برنامج التدريب والنظام الغذائي كان ممتاز، والمتابعة المستمرة ساعدتني كثيراً.", rating: 5 },
-    { name: "عميل 3", content: "أفضل مدرب تعاملت معه، صبور ومتفهم ويساعد في تحقيق الأهداف بطريقة صحية.", rating: 5 }
+    { 
+      name: "Ahmed Hassan", 
+      content: { 
+        ar: "تجربة رائعة مع المدرب عمر، حقق لي نتائج مذهلة في وقت قصير. أنصح بشدة بالتعامل معه.", 
+        en: "Amazing experience with coach Omar, achieved incredible results in a short time. Highly recommend working with him." 
+      }, 
+      rating: 5 
+    },
+    { 
+      name: "Sarah Mohamed", 
+      content: { 
+        ar: "برنامج التدريب والنظام الغذائي كان ممتاز، والمتابعة المستمرة ساعدتني كثيراً.", 
+        en: "The training program and nutrition plan were excellent, and the continuous follow-up helped me a lot." 
+      }, 
+      rating: 5 
+    },
+    { 
+      name: "Mohamed Ali", 
+      content: { 
+        ar: "أفضل مدرب تعاملت معه، صبور ومتفهم ويساعد في تحقيق الأهداف بطريقة صحية.", 
+        en: "Best trainer I've worked with, patient and understanding, helps achieve goals in a healthy way." 
+      }, 
+      rating: 5 
+    }
   ],
   services: [
-    "تدريب شخصي",
-    "برامج غذائية",
-    "استشارات اللياقة"
-  ]
+    { ar: "تدريب شخصي", en: "Personal Training" },
+    { ar: "برامج غذائية", en: "Nutrition Programs" },
+    { ar: "استشارات اللياقة", en: "Fitness Consultations" }
+  ],
+  resultsPage: {
+    title: { ar: "نتائج عملائنا", en: "Our Clients' Results" },
+    subtitle: { ar: "شاهد التحولات المذهلة التي حققها عملاؤنا", en: "See the amazing transformations our clients achieved" },
+    cards: [
+      {
+        title: { ar: "تحول أحمد", en: "Ahmed's Transformation" },
+        description: { ar: "فقدان 20 كيلو وبناء عضلات", en: "Lost 20kg and built muscle" },
+        image: "/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png",
+        stats: {
+          before: "95kg",
+          after: "75kg",
+          duration: { ar: "6 أشهر", en: "6 months" }
+        }
+      },
+      {
+        title: { ar: "تحول سارة", en: "Sarah's Transformation" },
+        description: { ar: "نحت الجسم وزيادة اللياقة", en: "Body sculpting and increased fitness" },
+        image: "/lovable-uploads/78c7f92d-29b1-4699-9511-9e5848c5892e.png",
+        stats: {
+          before: "28% fat",
+          after: "18% fat",
+          duration: { ar: "4 أشهر", en: "4 months" }
+        }
+      }
+    ]
+  },
+  paymentMethods: {
+    instapay: {
+      number: "01234567890",
+      name: "Omar Ashraf"
+    },
+    vodafoneCash: {
+      number: "01098765432",
+      name: "Omar Ashraf"
+    }
+  }
 };
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
