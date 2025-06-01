@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -74,80 +73,51 @@ const plans: Plan[] = [
 export const SubscriptionPayment: React.FC = () => {
   const [loading, setLoading] = useState<string | null>(null);
   const [showCustomFlow, setShowCustomFlow] = useState(false);
+  const [selectedPlanData, setSelectedPlanData] = useState<{
+    id: string;
+    name: string;
+    price: string;
+  } | null>(null);
   const { toast } = useToast();
 
   const handleSubscribe = async (planId: string) => {
-    try {
-      setLoading(planId);
-      
-      if (!supabase) {
-        toast({
-          title: "Configuration Required",
-          description: "Supabase configuration is required for payments. Please set up your environment variables.",
-          variant: "destructive"
-        });
-        return;
-      }
+    const plan = plans.find(p => p.id === planId);
+    if (!plan) return;
 
-      // Get the current session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to subscribe to a plan.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Call the create-checkout edge function
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { planId },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data?.url) {
-        // Open Stripe checkout in a new tab
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast({
-        title: "Subscription Error",
-        description: "Failed to start subscription process. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(null);
-    }
+    setSelectedPlanData({
+      id: plan.id,
+      name: plan.name,
+      price: `$${(plan.price / 100).toFixed(2)}`
+    });
+    setShowCustomFlow(true);
   };
 
   // Show custom subscription flow if requested
-  if (showCustomFlow) {
+  if (showCustomFlow && selectedPlanData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-12">
         <div className="container mx-auto">
           <div className="text-center mb-8">
             <Button 
               variant="outline" 
-              onClick={() => setShowCustomFlow(false)}
+              onClick={() => {
+                setShowCustomFlow(false);
+                setSelectedPlanData(null);
+              }}
               className="mb-4"
             >
-              ← Back to Standard Plans
+              ← Back to Plans
             </Button>
-            <h1 className="text-4xl font-bold mb-4">Personal Training Application</h1>
+            <h1 className="text-4xl font-bold mb-4">Complete Your Application</h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Apply for personalized one-on-one coaching with Omar
+              Apply for {selectedPlanData.name} coaching with Omar
             </p>
           </div>
-          <SubscriptionFlow />
+          <SubscriptionFlow 
+            selectedPlan={selectedPlanData.id}
+            planName={selectedPlanData.name}
+            planPrice={selectedPlanData.price}
+          />
         </div>
       </div>
     );
