@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Star, Users, Clock, TrendingUp, Phone, MessageCircle, Instagram, CheckCircle, Dumbbell, Award, Target, Zap, Heart, Calendar, Map, ChevronDown, PlayCircle, Timer, Trophy, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,10 +12,14 @@ import { InteractiveTestimonials } from '@/components/InteractiveTestimonials';
 import { VideoModal } from '@/components/VideoModal';
 import { CountdownTimer } from '@/components/CountdownTimer';
 import { ParticleBackground } from '@/components/ParticleBackground';
-
 const Index = () => {
-  const { language, t } = useLanguage();
-  const { settings } = useAdmin();
+  const {
+    language,
+    t
+  } = useLanguage();
+  const {
+    settings
+  } = useAdmin();
 
   // Initialize AOS animation library
   useEffect(() => {
@@ -29,16 +32,14 @@ const Index = () => {
         }, index * 100);
       });
     };
-
     initAOS();
-    
+
     // Initialize particles effect
     const canvas = document.getElementById('particles-canvas');
     if (canvas) {
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      
       const particles = [];
       for (let i = 0; i < 50; i++) {
         particles.push({
@@ -49,32 +50,24 @@ const Index = () => {
           size: Math.random() * 3 + 1
         });
       }
-      
       const animate = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'rgba(34, 197, 94, 0.1)';
-        
         particles.forEach(particle => {
           particle.x += particle.dx;
           particle.y += particle.dy;
-          
           if (particle.x < 0 || particle.x > canvas.width) particle.dx *= -1;
           if (particle.y < 0 || particle.y > canvas.height) particle.dy *= -1;
-          
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
           ctx.fill();
         });
-        
         requestAnimationFrame(animate);
       };
-      
       animate();
     }
   }, []);
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 relative overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+  return <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 relative overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Enhanced Navigation */}
       <EnhancedNavigation />
       
@@ -144,11 +137,7 @@ const Index = () => {
             <AnimatedSection className="lg:w-1/2" animation="fade-left" delay={200}>
               <div className="relative">
                 <div className="relative z-10">
-                  <img 
-                    src={settings.heroImage}
-                    alt="Omar Ashraf - Elite Personal Trainer"
-                    className="rounded-3xl shadow-2xl w-full max-w-md mx-auto transform transition-all duration-500 hover:scale-105 hover:shadow-3xl"
-                  />
+                  <img src={settings.heroImage} alt="Omar Ashraf - Elite Personal Trainer" className="rounded-3xl shadow-2xl w-full max-w-md mx-auto transform transition-all duration-500 hover:scale-105 hover:shadow-3xl" />
                   
                   {/* Floating Elements */}
                   <div className="absolute -top-6 -right-6 bg-white/90 backdrop-blur-sm text-green-600 p-4 rounded-2xl animate-bounce shadow-xl">
@@ -194,13 +183,27 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                { icon: Users, value: "500+", label: language === 'ar' ? 'عميل متحول' : 'Transformed Clients', color: 'text-blue-500' },
-                { icon: Trophy, value: "98%", label: language === 'ar' ? 'نسبة النجاح' : 'Success Rate', color: 'text-yellow-500' },
-                { icon: Award, value: "50+", label: language === 'ar' ? 'جائزة وشهادة' : 'Awards & Certifications', color: 'text-purple-500' },
-                { icon: Clock, value: "24/7", label: language === 'ar' ? 'دعم مستمر' : 'Continuous Support', color: 'text-green-500' }
-              ].map((stat, index) => (
-                <AnimatedSection key={index} animation="scale" delay={index * 150}>
+              {[{
+              icon: Users,
+              value: "500+",
+              label: language === 'ar' ? 'عميل متحول' : 'Transformed Clients',
+              color: 'text-blue-500'
+            }, {
+              icon: Trophy,
+              value: "98%",
+              label: language === 'ar' ? 'نسبة النجاح' : 'Success Rate',
+              color: 'text-yellow-500'
+            }, {
+              icon: Award,
+              value: "50+",
+              label: language === 'ar' ? 'جائزة وشهادة' : 'Awards & Certifications',
+              color: 'text-purple-500'
+            }, {
+              icon: Clock,
+              value: "24/7",
+              label: language === 'ar' ? 'دعم مستمر' : 'Continuous Support',
+              color: 'text-green-500'
+            }].map((stat, index) => <AnimatedSection key={index} animation="scale" delay={index * 150}>
                   <div className="text-center group hover:scale-110 transition-transform duration-300">
                     <div className={`bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 transform transition-all duration-300 group-hover:shadow-2xl shadow-lg ${stat.color}`}>
                       <stat.icon className="w-10 h-10" />
@@ -210,8 +213,7 @@ const Index = () => {
                     </div>
                     <div className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</div>
                   </div>
-                </AnimatedSection>
-              ))}
+                </AnimatedSection>)}
             </div>
           </div>
         </section>
@@ -231,14 +233,9 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {settings.galleryImages.map((image, index) => (
-                <AnimatedSection key={index} animation="scale" delay={index * 100}>
+              {settings.galleryImages.map((image, index) => <AnimatedSection key={index} animation="scale" delay={index * 100}>
                   <div className="relative overflow-hidden rounded-2xl shadow-lg group cursor-pointer transform transition-all duration-500 hover:scale-105 hover:shadow-2xl">
-                    <img 
-                      src={image}
-                      alt={`Transformation ${index + 1}`}
-                      className="w-full h-80 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
-                    />
+                    <img src={image} alt={`Transformation ${index + 1}`} className="w-full h-80 object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110" />
                     
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center">
@@ -257,8 +254,7 @@ const Index = () => {
                       <PlayCircle className="w-6 h-6 text-white" />
                     </div>
                   </div>
-                </AnimatedSection>
-              ))}
+                </AnimatedSection>)}
             </div>
           </div>
         </section>
@@ -288,18 +284,10 @@ const Index = () => {
                       {language === 'ar' ? settings.specialties.certifications.title : 'Certifications & Credentials'}
                     </h3>
                     <ul className="space-y-4">
-                      {(language === 'ar' ? settings.specialties.certifications.items : [
-                        'NASM Certified Personal Trainer',
-                        'Precision Nutrition Level 1',
-                        'Functional Movement Screen (FMS)',
-                        'CPR/AED Certified',
-                        '5+ Years Professional Experience'
-                      ]).map((item, index) => (
-                        <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
+                      {(language === 'ar' ? settings.specialties.certifications.items : ['NASM Certified Personal Trainer', 'Precision Nutrition Level 1', 'Functional Movement Screen (FMS)', 'CPR/AED Certified', '5+ Years Professional Experience']).map((item, index) => <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
                           <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
                           <span className="font-medium">{item}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
                   </div>
                   
@@ -309,18 +297,10 @@ const Index = () => {
                       {language === 'ar' ? settings.specialties.specializations.title : 'Areas of Expertise'}
                     </h3>
                     <ul className="space-y-4">
-                      {(language === 'ar' ? settings.specialties.specializations.items : [
-                        'Muscle Building & Hypertrophy',
-                        'Fat Loss & Body Composition',
-                        'Strength Training & Powerlifting',
-                        'Functional Fitness & Mobility',
-                        'Sports Performance Enhancement'
-                      ]).map((item, index) => (
-                        <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
+                      {(language === 'ar' ? settings.specialties.specializations.items : ['Muscle Building & Hypertrophy', 'Fat Loss & Body Composition', 'Strength Training & Powerlifting', 'Functional Fitness & Mobility', 'Sports Performance Enhancement']).map((item, index) => <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
                           <Zap className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" />
                           <span className="font-medium">{item}</span>
-                        </li>
-                      ))}
+                        </li>)}
                     </ul>
                   </div>
                 </div>
@@ -328,11 +308,7 @@ const Index = () => {
               
               <AnimatedSection animation="fade-left" delay={300}>
                 <div className="relative">
-                  <img 
-                    src={settings.heroImage}
-                    alt="Omar Ashraf Professional Photo"
-                    className="rounded-2xl shadow-2xl w-full max-w-lg mx-auto"
-                  />
+                  <img src={settings.heroImage} alt="Omar Ashraf Professional Photo" className="rounded-2xl shadow-2xl w-full max-w-lg mx-auto" />
                   
                   {/* Achievement Badges */}
                   <div className="absolute -top-6 -left-6 bg-yellow-400 text-gray-800 p-4 rounded-2xl shadow-xl animate-pulse">
@@ -395,18 +371,10 @@ const Index = () => {
                   </p>
                   
                   <ul className="space-y-4 mb-8 text-right">
-                    {(language === 'ar' ? settings.packages.basic.features : [
-                      'Personalized workout plan',
-                      'Basic nutrition guidelines',
-                      'Weekly progress check-ins',
-                      'WhatsApp support',
-                      'Exercise form videos'
-                    ]).map((feature, index) => (
-                      <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
+                    {(language === 'ar' ? settings.packages.basic.features : ['Personalized workout plan', 'Basic nutrition guidelines', 'Weekly progress check-ins', 'WhatsApp support', 'Exercise form videos']).map((feature, index) => <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
                         <CheckCircle className="w-5 h-5 text-green-500 ml-2 flex-shrink-0" />
                         <span>{feature}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                   
                   <Button className="w-full bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 transform transition-all duration-300 hover:scale-105 text-lg py-3">
@@ -445,19 +413,10 @@ const Index = () => {
                   </p>
                   
                   <ul className="space-y-4 mb-8 text-right">
-                    {(language === 'ar' ? settings.packages.professional.features : [
-                      'Custom training & nutrition plan',
-                      'Daily progress monitoring',
-                      'Video call consultations',
-                      'Supplement recommendations',
-                      'Meal prep guidance',
-                      '24/7 WhatsApp support'
-                    ]).map((feature, index) => (
-                      <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
+                    {(language === 'ar' ? settings.packages.professional.features : ['Custom training & nutrition plan', 'Daily progress monitoring', 'Video call consultations', 'Supplement recommendations', 'Meal prep guidance', '24/7 WhatsApp support']).map((feature, index) => <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
                         <CheckCircle className="w-5 h-5 text-green-500 ml-2 flex-shrink-0" />
                         <span>{feature}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                   
                   <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 dark:from-green-600 dark:to-emerald-600 dark:hover:from-green-700 dark:hover:to-emerald-700 transform transition-all duration-300 hover:scale-105 shadow-xl text-lg py-3 font-bold">
@@ -491,20 +450,10 @@ const Index = () => {
                   </p>
                   
                   <ul className="space-y-4 mb-8 text-right">
-                    {(language === 'ar' ? settings.packages.premium.features : [
-                      'Complete transformation program',
-                      'Weekly 1-on-1 video sessions',
-                      'Custom meal plans & recipes',
-                      'Premium supplement stack',
-                      'Body composition tracking',
-                      'Results guarantee',
-                      'VIP 24/7 support'
-                    ]).map((feature, index) => (
-                      <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
+                    {(language === 'ar' ? settings.packages.premium.features : ['Complete transformation program', 'Weekly 1-on-1 video sessions', 'Custom meal plans & recipes', 'Premium supplement stack', 'Body composition tracking', 'Results guarantee', 'VIP 24/7 support']).map((feature, index) => <li key={index} className="flex items-center text-gray-700 dark:text-gray-300">
                         <CheckCircle className="w-5 h-5 text-purple-500 ml-2 flex-shrink-0" />
                         <span>{feature}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                   
                   <Button className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 transform transition-all duration-300 hover:scale-105 text-lg py-3 font-bold">
@@ -545,38 +494,24 @@ const Index = () => {
           </AnimatedSection>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            {settings.steps.map((item, index) => (
-              <AnimatedSection key={index} animation="scale" delay={index * 150}>
+            {settings.steps.map((item, index) => <AnimatedSection key={index} animation="scale" delay={index * 150}>
                 <div className="text-center group relative">
                   {/* Connection Line */}
-                  {index < settings.steps.length - 1 && (
-                    <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-green-300 to-green-500 transform translate-x-4 z-10"></div>
-                  )}
+                  {index < settings.steps.length - 1 && <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-green-300 to-green-500 transform translate-x-4 z-10"></div>}
                   
                   <div className="bg-gradient-to-br from-green-500 to-emerald-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold transform transition-all duration-300 group-hover:scale-125 group-hover:shadow-2xl shadow-lg relative z-20">
                     {item.step}
                   </div>
                   
                   <h3 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">
-                    {language === 'ar' ? item.title : (
-                      index === 0 ? 'Initial Consultation' :
-                      index === 1 ? 'Assessment & Planning' :
-                      index === 2 ? 'Program Implementation' :
-                      'Results & Optimization'
-                    )}
+                    {language === 'ar' ? item.title : index === 0 ? 'Initial Consultation' : index === 1 ? 'Assessment & Planning' : index === 2 ? 'Program Implementation' : 'Results & Optimization'}
                   </h3>
                   
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {language === 'ar' ? item.description : (
-                      index === 0 ? 'Free consultation to discuss your goals, assess your current fitness level, and understand your lifestyle.' :
-                      index === 1 ? 'Comprehensive health assessment and creation of your personalized training and nutrition plan.' :
-                      index === 2 ? 'Begin your transformation journey with daily support, progress tracking, and plan adjustments.' :
-                      'Achieve your desired results with continuous optimization and long-term maintenance strategies.'
-                    )}
+                    {language === 'ar' ? item.description : index === 0 ? 'Free consultation to discuss your goals, assess your current fitness level, and understand your lifestyle.' : index === 1 ? 'Comprehensive health assessment and creation of your personalized training and nutrition plan.' : index === 2 ? 'Begin your transformation journey with daily support, progress tracking, and plan adjustments.' : 'Achieve your desired results with continuous optimization and long-term maintenance strategies.'}
                   </p>
                 </div>
-              </AnimatedSection>
-            ))}
+              </AnimatedSection>)}
           </div>
         </div>
       </section>
@@ -604,21 +539,12 @@ const Index = () => {
           
           <AnimatedSection animation="scale" delay={200}>
             <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-lg mx-auto">
-              <Button 
-                size="lg" 
-                className="bg-white text-green-600 hover:bg-emerald-50 hover:text-green-700 text-xl px-10 py-6 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1"
-                onClick={() => window.open(settings.socialLinks.whatsapp, '_blank')}
-              >
+              <Button size="lg" className="bg-white text-green-600 hover:bg-emerald-50 hover:text-green-700 text-xl px-10 py-6 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1" onClick={() => window.open(settings.socialLinks.whatsapp, '_blank')}>
                 <MessageCircle className="w-6 h-6 mr-3" />
                 {language === 'ar' ? settings.buttons.whatsapp : 'WhatsApp Now'}
               </Button>
               
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="text-xl px-10 py-6 border-2 border-white text-white hover:bg-white hover:text-green-600 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1"
-                onClick={() => window.open(`tel:${settings.socialLinks.phone}`, '_blank')}
-              >
+              <Button size="lg" variant="outline" className="text-xl px-10 py-6 border-2 border-white text-white hover:bg-white hover:text-green-600 transform transition-all duration-300 hover:scale-105 shadow-2xl font-bold rounded-full flex-1" onClick={() => window.open(`tel:${settings.socialLinks.phone}`, '_blank')}>
                 <Phone className="w-6 h-6 mr-3" />
                 {language === 'ar' ? settings.buttons.callMe : 'Call Direct'}
               </Button>
@@ -673,9 +599,9 @@ const Index = () => {
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '20px 20px'
-          }}></div>
+          backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+          backgroundSize: '20px 20px'
+        }}></div>
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
@@ -683,11 +609,7 @@ const Index = () => {
             <AnimatedSection animation="fade-up" delay={100}>
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <img 
-                    src={settings.content.logo} 
-                    alt="Omar Ashraf Logo"
-                    className="w-12 h-12"
-                  />
+                  <img src={settings.content.logo} alt="Omar Ashraf Logo" className="w-12 h-12" />
                   <h3 className="text-2xl font-bold">{language === 'ar' ? settings.content.aboutTitle : 'Omar Ashraf'}</h3>
                 </div>
                 <p className="text-gray-400 leading-relaxed mb-6">
@@ -696,20 +618,10 @@ const Index = () => {
                 
                 {/* Social Links */}
                 <div className="flex space-x-reverse space-x-4">
-                  <a 
-                    href={settings.socialLinks.instagram} 
-                    className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-full hover:scale-110 transform transition-all duration-300 shadow-lg hover:shadow-xl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={settings.socialLinks.instagram} className="bg-gradient-to-r from-pink-500 to-purple-500 p-3 rounded-full hover:scale-110 transform transition-all duration-300 shadow-lg hover:shadow-xl" target="_blank" rel="noopener noreferrer">
                     <Instagram className="w-5 h-5" />
                   </a>
-                  <a 
-                    href={settings.socialLinks.whatsapp} 
-                    className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-full hover:scale-110 transform transition-all duration-300 shadow-lg hover:shadow-xl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={settings.socialLinks.whatsapp} className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-full hover:scale-110 transform transition-all duration-300 shadow-lg hover:shadow-xl" target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="w-5 h-5" />
                   </a>
                 </div>
@@ -722,19 +634,10 @@ const Index = () => {
                   {language === 'ar' ? settings.sectionTitles.services : 'Services'}
                 </h4>
                 <ul className="space-y-3 text-gray-400">
-                  {(language === 'ar' ? settings.services : [
-                    'Personal Training',
-                    'Nutrition Coaching',
-                    'Online Consultations',
-                    'Fitness Assessments',
-                    'Program Design',
-                    'Progress Tracking'
-                  ]).map((service, index) => (
-                    <li key={index} className="hover:text-green-400 transition-colors duration-300 cursor-pointer flex items-center">
+                  {(language === 'ar' ? settings.services : ['Personal Training', 'Nutrition Coaching', 'Online Consultations', 'Fitness Assessments', 'Program Design', 'Progress Tracking']).map((service, index) => <li key={index} className="hover:text-green-400 transition-colors duration-300 cursor-pointer flex items-center">
                       <ChevronDown className="w-4 h-4 mr-2 rotate-270" />
                       {service}
-                    </li>
-                  ))}
+                    </li>)}
                 </ul>
               </div>
             </AnimatedSection>
@@ -791,11 +694,7 @@ const Index = () => {
                     {language === 'ar' ? 'النشرة الإخبارية' : 'Newsletter'}
                   </h5>
                   <div className="flex">
-                    <input 
-                      type="email" 
-                      placeholder={language === 'ar' ? 'بريدك الإلكتروني' : 'Your email'}
-                      className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:border-green-400"
-                    />
+                    <input type="email" placeholder={language === 'ar' ? 'بريدك الإلكتروني' : 'Your email'} className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:border-green-400" />
                     <Button className="bg-green-500 hover:bg-green-600 px-6 rounded-l-none">
                       {language === 'ar' ? 'اشترك' : 'Subscribe'}
                     </Button>
@@ -829,15 +728,7 @@ const Index = () => {
       <VideoModal />
 
       {/* Back to Top Button */}
-      <button 
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transform transition-all duration-300 hover:scale-110 z-50"
-        aria-label="Back to top"
-      >
-        <ChevronDown className="w-6 h-6 rotate-180" />
-      </button>
-    </div>
-  );
+      
+    </div>;
 };
-
 export default Index;
