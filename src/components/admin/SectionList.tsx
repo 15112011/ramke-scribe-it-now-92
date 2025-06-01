@@ -11,10 +11,19 @@ import { useToast } from '@/hooks/use-toast';
 import { SectionEditor } from './SectionEditor';
 import { LiveSectionEditor } from './LiveSectionEditor';
 
+// Interface for the legacy SectionEditor component
+interface LegacySection {
+  id: string;
+  name: string;
+  type: 'hero' | 'gallery' | 'stats' | 'about' | 'packages' | 'testimonials' | 'steps' | 'contact' | 'video' | 'results';
+  enabled: boolean;
+  content: any;
+}
+
 export const SectionList: React.FC = () => {
   const { sections, toggleSection, reorderSections } = useSections();
   const { toast } = useToast();
-  const [editingSection, setEditingSection] = useState<SectionConfig | null>(null);
+  const [editingSection, setEditingSection] = useState<LegacySection | null>(null);
   const [liveEditingSection, setLiveEditingSection] = useState<string | null>(null);
 
   const handleDragEnd = (result: any) => {
@@ -32,7 +41,17 @@ export const SectionList: React.FC = () => {
     });
   };
 
-  const handleSaveSection = (updatedSection: SectionConfig) => {
+  const convertToLegacySection = (section: SectionConfig): LegacySection => {
+    return {
+      id: section.id,
+      name: section.name,
+      type: section.type,
+      enabled: section.enabled,
+      content: {}
+    };
+  };
+
+  const handleSaveSection = (updatedSection: LegacySection) => {
     console.log('SectionList: Saving updated section', updatedSection);
     setEditingSection(null);
     
@@ -118,7 +137,7 @@ export const SectionList: React.FC = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setEditingSection(section)}
+                                onClick={() => setEditingSection(convertToLegacySection(section))}
                                 className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                 title="Advanced Editor"
                               >
