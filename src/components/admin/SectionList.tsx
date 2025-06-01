@@ -4,16 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Eye, EyeOff, Edit, Trash2, GripVertical, Plus } from 'lucide-react';
+import { Edit, GripVertical, Eye, Paintbrush } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useSections } from '@/contexts/SectionsContext';
 import { useToast } from '@/hooks/use-toast';
 import { SectionEditor } from './SectionEditor';
+import { LiveSectionEditor } from './LiveSectionEditor';
+
+interface Section {
+  id: string;
+  name: string;
+  type: 'hero' | 'gallery' | 'stats' | 'about' | 'packages' | 'testimonials' | 'steps' | 'contact' | 'video' | 'results';
+  enabled: boolean;
+  order: number;
+  content: any;
+}
 
 export const SectionList: React.FC = () => {
-  const { sections, toggleSection, reorderSections, getSectionById } = useSections();
+  const { sections, toggleSection, reorderSections } = useSections();
   const { toast } = useToast();
-  const [editingSection, setEditingSection] = useState<any>(null);
+  const [editingSection, setEditingSection] = useState<Section | null>(null);
+  const [liveEditingSection, setLiveEditingSection] = useState<string | null>(null);
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -23,52 +34,30 @@ export const SectionList: React.FC = () => {
     items.splice(result.destination.index, 0, reorderedItem);
 
     reorderSections(items);
+    
     toast({
       title: "Section Order Updated",
       description: "The section order has been saved successfully."
     });
   };
 
-  const handleToggleSection = (sectionId: string) => {
-    toggleSection(sectionId);
-    const section = getSectionById(sectionId);
+  const convertToLegacySection = (section: any): Section => {
+    return {
+      id: section.id,
+      name: section.name,
+      type: section.type,
+      enabled: section.enabled,
+      order: section.order,
+      content: section.content || {}
+    };
+  };
+
+  const handleSaveSection = (updatedSection: Section) => {
+    console.log('SectionList: Saving updated section', updatedSection);
+    setEditingSection(null);
+    
     toast({
       title: "Section Updated",
-      description: `${section?.name} has been ${section?.enabled ? 'disabled' : 'enabled'}.`
-    });
-  };
-
-  const deleteSection = (sectionId: string) => {
-    // Don't allow deletion of core sections
-    if (['hero', 'gallery', 'stats', 'about', 'packages', 'contact'].includes(sectionId)) {
-      toast({
-        title: "Cannot Delete",
-        description: "Core sections cannot be deleted.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // For now, we'll just disable the section instead of deleting it
-    const section = getSectionById(sectionId);
-    if (section && section.enabled) {
-      toggleSection(sectionId);
-      toast({
-        title: "Section Disabled",
-        description: "The section has been disabled. Use the toggle to re-enable it."
-      });
-    }
-  };
-
-  const openEditDialog = (section: any) => {
-    setEditingSection(section);
-  };
-
-  const saveSection = (updatedSection: any) => {
-    console.log('Section saved:', updatedSection);
-    setEditingSection(null);
-    toast({
-      title: "Section Saved",
       description: `${updatedSection.name} has been updated successfully.`
     });
   };
@@ -79,24 +68,22 @@ export const SectionList: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <GripVertical className="w-5 h-5" />
-            All Sections ({sections.length})
+            Website Sections
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>Live Control:</strong> Changes made here will immediately affect the main website at "/". 
-              Disabled sections will not appear on the site, and the order here determines the display order.
+          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              Drag and drop sections to reorder them. Toggle switches to enable/disable sections on your website.
+              Use the Live Editor for visual editing with drag-and-drop positioning.
             </p>
           </div>
-          
+
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="sections">
               {(provided) => (
                 <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
-                  {sections
-                    .sort((a, b) => a.order - b.order)
-                    .map((section, index) => (
+                  {sections.map((section, index) => (
                     <Draggable key={section.id} draggableId={section.id} index={index}>
                       {(provided, snapshot) => (
                         <div
@@ -104,7 +91,7 @@ export const SectionList: React.FC = () => {
                           {...provided.draggableProps}
                           className={`bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-2 transition-all duration-200 ${
                             snapshot.isDragging ? 'border-emerald-500 shadow-lg scale-105' : 'border-gray-200 dark:border-gray-600'
-                          } ${!section.enabled ? 'opacity-60' : ''}`}
+                          }`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -117,49 +104,45 @@ export const SectionList: React.FC = () => {
                                   <h3 className="font-semibold text-gray-800 dark:text-white">
                                     {section.name}
                                   </h3>
-                                  <Badge variant="secondary" className="text-xs capitalize">
+                                  <Badge variant="secondary" className="text-xs">
                                     {section.type}
                                   </Badge>
-                                  <Badge variant={section.enabled ? "default" : "destructive"} className="text-xs">
-                                    {section.enabled ? "Active" : "Disabled"}
-                                  </Badge>
+                                  {section.enabled && (
+                                    <Badge variant="default" className="text-xs bg-green-500">
+                                      Active
+                                    </Badge>
+                                  )}
                                 </div>
                                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                                  Order: {section.order} | Component: {section.component}
+                                  Order: {section.order} • {section.enabled ? 'Visible on website' : 'Hidden from website'}
                                 </p>
                               </div>
                             </div>
                             
                             <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1">
-                                {section.enabled ? (
-                                  <Eye className="w-4 h-4 text-green-600" />
-                                ) : (
-                                  <EyeOff className="w-4 h-4 text-red-600" />
-                                )}
-                                <Switch
-                                  checked={section.enabled}
-                                  onCheckedChange={() => handleToggleSection(section.id)}
-                                />
-                              </div>
+                              <Switch
+                                checked={section.enabled}
+                                onCheckedChange={() => toggleSection(section.id)}
+                              />
                               
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => openEditDialog(section)}
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                onClick={() => setLiveEditingSection(section.id)}
+                                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                title="Live Editor"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Paintbrush className="w-4 h-4" />
                               </Button>
                               
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => deleteSection(section.id)}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                disabled={['hero', 'gallery', 'stats', 'about', 'packages', 'contact'].includes(section.id)}
+                                onClick={() => setEditingSection(convertToLegacySection(section))}
+                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                title="Advanced Editor"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Edit className="w-4 h-4" />
                               </Button>
                             </div>
                           </div>
@@ -175,12 +158,22 @@ export const SectionList: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Legacy Section Editor */}
       {editingSection && (
         <SectionEditor
           section={editingSection}
           isOpen={!!editingSection}
           onClose={() => setEditingSection(null)}
-          onSave={saveSection}
+          onSave={handleSaveSection}
+        />
+      )}
+
+      {/* Live Section Editor */}
+      {liveEditingSection && (
+        <LiveSectionEditor
+          sectionId={liveEditingSection}
+          isOpen={!!liveEditingSection}
+          onClose={() => setLiveEditingSection(null)}
         />
       )}
     </div>
