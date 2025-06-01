@@ -9,12 +9,19 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { AnimatedSection } from '@/components/AnimatedSection';
+import { AdminAuth } from '@/components/AdminAuth';
 
 const Admin = () => {
   const { settings, updateSettings } = useAdmin();
   const [tempSettings, setTempSettings] = useState(settings);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // If not authenticated, show login
+  if (!isAuthenticated) {
+    return <AdminAuth onLogin={() => setIsAuthenticated(true)} />;
+  }
 
   const handleSave = () => {
     updateSettings(tempSettings);

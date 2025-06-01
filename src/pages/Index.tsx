@@ -11,7 +11,6 @@ import { Steps } from "@/components/Steps";
 import { InteractiveTestimonials } from "@/components/InteractiveTestimonials";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
-import { AdminPanel } from "@/components/AdminPanel";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 
@@ -20,7 +19,6 @@ const Index = () => {
     <div className="min-h-screen">
       <ParticleBackground />
       <Header />
-      <AdminPanel />
       
       <main>
         <Hero />

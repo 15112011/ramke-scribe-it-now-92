@@ -3,22 +3,13 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Settings, LogOut } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
 import { AdminAuth } from './AdminAuth';
 import { SectionManager } from './SectionManager';
 
 export const AdminPanel: React.FC = () => {
-  const { isAdminMode } = useAdmin();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
-
-  console.log('AdminPanel rendered, isAdminMode:', isAdminMode);
-
-  if (!isAdminMode) {
-    console.log('Admin mode is OFF, not rendering panel');
-    return null;
-  }
 
   if (!isAuthenticated) {
     return <AdminAuth onLogin={() => setIsAuthenticated(true)} />;
