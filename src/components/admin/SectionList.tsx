@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,6 +27,21 @@ export const SectionList: React.FC = () => {
 
   // Initialize sections from settings
   useEffect(() => {
+    const defaultContent = {
+      heroTitle: 'Welcome',
+      heroSubtitle: 'Professional Photography',
+      aboutTitle: 'About Us',
+      packagesTitle: 'Our Packages',
+      testimonialsTitle: 'Testimonials',
+      stepsTitle: 'Our Process',
+      contactTitle: 'Contact Us',
+      contactSubtitle: 'Get in touch',
+      footerDescription: 'Professional services',
+      companyName: 'Company Name',
+      logo: '',
+      favIcon: '/favicon.ico'
+    };
+
     const initialSections: Section[] = [
       { 
         id: 'hero', 
@@ -171,7 +185,22 @@ export const SectionList: React.FC = () => {
     
     switch (updatedSection.type) {
       case 'hero':
-        if (!newSettings.content) newSettings.content = {};
+        if (!newSettings.content) {
+          newSettings.content = {
+            heroTitle: '',
+            heroSubtitle: '',
+            aboutTitle: '',
+            packagesTitle: '',
+            testimonialsTitle: '',
+            stepsTitle: '',
+            contactTitle: '',
+            contactSubtitle: '',
+            footerDescription: '',
+            companyName: '',
+            logo: '',
+            favIcon: '/favicon.ico'
+          };
+        }
         newSettings.content.heroTitle = updatedSection.content.title;
         newSettings.content.heroSubtitle = updatedSection.content.subtitle;
         newSettings.heroImage = updatedSection.content.image;
@@ -192,7 +221,22 @@ export const SectionList: React.FC = () => {
         newSettings.steps = Array.isArray(updatedSection.content) ? updatedSection.content : [updatedSection.content];
         break;
       case 'contact':
-        if (!newSettings.content) newSettings.content = {};
+        if (!newSettings.content) {
+          newSettings.content = {
+            heroTitle: '',
+            heroSubtitle: '',
+            aboutTitle: '',
+            packagesTitle: '',
+            testimonialsTitle: '',
+            stepsTitle: '',
+            contactTitle: '',
+            contactSubtitle: '',
+            footerDescription: '',
+            companyName: '',
+            logo: '',
+            favIcon: '/favicon.ico'
+          };
+        }
         newSettings.content.contactTitle = updatedSection.content.title;
         newSettings.content.contactSubtitle = updatedSection.content.subtitle;
         break;
