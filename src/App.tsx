@@ -9,26 +9,29 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import { AdminProvider } from "./contexts/AdminContext";
 import { SectionsProvider } from "./contexts/SectionsContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider>
-        <AdminProvider>
-          <SectionsProvider>
-            <Toaster />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </SectionsProvider>
-        </AdminProvider>
-      </TooltipProvider>
+      <LanguageProvider>
+        <TooltipProvider>
+          <AdminProvider>
+            <SectionsProvider>
+              <Toaster />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </SectionsProvider>
+          </AdminProvider>
+        </TooltipProvider>
+      </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
