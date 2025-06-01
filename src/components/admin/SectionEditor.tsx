@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 interface Section {
   id: string;
   name: string;
-  type: 'hero' | 'gallery' | 'stats' | 'about' | 'packages' | 'testimonials' | 'steps' | 'contact';
+  type: 'hero' | 'gallery' | 'stats' | 'about' | 'packages' | 'testimonials' | 'steps' | 'contact' | 'video' | 'results';
   enabled: boolean;
   content: any;
 }
@@ -135,6 +134,60 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, isOpen, o
                   placeholder="Years of experience"
                 />
               </div>
+            </div>
+          </div>
+        );
+
+      case 'video':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Video Title</label>
+              <Input
+                value={editedSection.content?.title || ''}
+                onChange={(e) => updateContent('title', e.target.value)}
+                placeholder="Enter video title"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Video URL</label>
+              <Input
+                value={editedSection.content?.videoUrl || ''}
+                onChange={(e) => updateContent('videoUrl', e.target.value)}
+                placeholder="Enter video URL"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Video Description</label>
+              <Textarea
+                value={editedSection.content?.description || ''}
+                onChange={(e) => updateContent('description', e.target.value)}
+                placeholder="Enter video description"
+                rows={3}
+              />
+            </div>
+          </div>
+        );
+
+      case 'results':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Results Title</label>
+              <Input
+                value={editedSection.content?.title || ''}
+                onChange={(e) => updateContent('title', e.target.value)}
+                placeholder="Enter results title"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Results Description</label>
+              <Textarea
+                value={editedSection.content?.description || ''}
+                onChange={(e) => updateContent('description', e.target.value)}
+                placeholder="Enter results description"
+                rows={3}
+              />
             </div>
           </div>
         );
