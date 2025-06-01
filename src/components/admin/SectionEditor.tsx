@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,7 +29,12 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, isOpen, o
   const [editedSection, setEditedSection] = useState<Section>(section);
   const { toast } = useToast();
 
+  useEffect(() => {
+    setEditedSection(section);
+  }, [section]);
+
   const handleSave = () => {
+    console.log('SectionEditor: Saving section', editedSection);
     onSave(editedSection);
     toast({
       title: "Section Updated",
@@ -39,9 +44,18 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, isOpen, o
   };
 
   const updateContent = (key: string, value: any) => {
+    console.log('SectionEditor: Updating content', key, value);
     setEditedSection(prev => ({
       ...prev,
       content: { ...prev.content, [key]: value }
+    }));
+  };
+
+  const updateArrayContent = (newArray: any[]) => {
+    console.log('SectionEditor: Updating array content', newArray);
+    setEditedSection(prev => ({
+      ...prev,
+      content: newArray
     }));
   };
 
@@ -128,32 +142,213 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, isOpen, o
       case 'packages':
         return (
           <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="text-sm font-medium mb-2 block">Basic Package Price</label>
-                <Input
-                  value={editedSection.content?.basic?.price || ''}
-                  onChange={(e) => updateContent('basic', { ...editedSection.content?.basic, price: e.target.value })}
-                  placeholder="Basic price"
-                />
+            <div className="space-y-6">
+              {/* Basic Package */}
+              <div className="border p-4 rounded">
+                <h4 className="font-medium mb-3">Basic Package</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Price</label>
+                    <Input
+                      value={editedSection.content?.basic?.price || ''}
+                      onChange={(e) => updateContent('basic', { ...editedSection.content?.basic, price: e.target.value })}
+                      placeholder="Basic price"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Name</label>
+                    <Input
+                      value={editedSection.content?.basic?.name || 'Basic Package'}
+                      onChange={(e) => updateContent('basic', { ...editedSection.content?.basic, name: e.target.value })}
+                      placeholder="Package name"
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Professional Package Price</label>
-                <Input
-                  value={editedSection.content?.professional?.price || ''}
-                  onChange={(e) => updateContent('professional', { ...editedSection.content?.professional, price: e.target.value })}
-                  placeholder="Professional price"
-                />
+
+              {/* Professional Package */}
+              <div className="border p-4 rounded">
+                <h4 className="font-medium mb-3">Professional Package</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Price</label>
+                    <Input
+                      value={editedSection.content?.professional?.price || ''}
+                      onChange={(e) => updateContent('professional', { ...editedSection.content?.professional, price: e.target.value })}
+                      placeholder="Professional price"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Name</label>
+                    <Input
+                      value={editedSection.content?.professional?.name || 'Professional Package'}
+                      onChange={(e) => updateContent('professional', { ...editedSection.content?.professional, name: e.target.value })}
+                      placeholder="Package name"
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium mb-2 block">Premium Package Price</label>
-                <Input
-                  value={editedSection.content?.premium?.price || ''}
-                  onChange={(e) => updateContent('premium', { ...editedSection.content?.premium, price: e.target.value })}
-                  placeholder="Premium price"
-                />
+
+              {/* Premium Package */}
+              <div className="border p-4 rounded">
+                <h4 className="font-medium mb-3">Premium Package</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Price</label>
+                    <Input
+                      value={editedSection.content?.premium?.price || ''}
+                      onChange={(e) => updateContent('premium', { ...editedSection.content?.premium, price: e.target.value })}
+                      placeholder="Premium price"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Name</label>
+                    <Input
+                      value={editedSection.content?.premium?.name || 'Premium Package'}
+                      onChange={(e) => updateContent('premium', { ...editedSection.content?.premium, name: e.target.value })}
+                      placeholder="Package name"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
+        );
+
+      case 'testimonials':
+        const testimonials = Array.isArray(editedSection.content) ? editedSection.content : [];
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <label className="text-sm font-medium">Testimonials</label>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  const newTestimonial = { name: '', content: '', rating: 5 };
+                  updateArrayContent([...testimonials, newTestimonial]);
+                }}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Testimonial
+              </Button>
+            </div>
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="border p-4 rounded space-y-3">
+                <div className="flex justify-between">
+                  <h4 className="font-medium">Testimonial {index + 1}</h4>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newTestimonials = testimonials.filter((_, i) => i !== index);
+                      updateArrayContent(newTestimonials);
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <Input
+                  value={testimonial.name || ''}
+                  onChange={(e) => {
+                    const newTestimonials = [...testimonials];
+                    newTestimonials[index] = { ...testimonial, name: e.target.value };
+                    updateArrayContent(newTestimonials);
+                  }}
+                  placeholder="Customer name"
+                />
+                <Textarea
+                  value={testimonial.content || ''}
+                  onChange={(e) => {
+                    const newTestimonials = [...testimonials];
+                    newTestimonials[index] = { ...testimonial, content: e.target.value };
+                    updateArrayContent(newTestimonials);
+                  }}
+                  placeholder="Testimonial content"
+                  rows={3}
+                />
+                <Input
+                  type="number"
+                  min="1"
+                  max="5"
+                  value={testimonial.rating || 5}
+                  onChange={(e) => {
+                    const newTestimonials = [...testimonials];
+                    newTestimonials[index] = { ...testimonial, rating: parseInt(e.target.value) };
+                    updateArrayContent(newTestimonials);
+                  }}
+                  placeholder="Rating (1-5)"
+                />
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'steps':
+        const steps = Array.isArray(editedSection.content) ? editedSection.content : [];
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <label className="text-sm font-medium">Process Steps</label>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  const newStep = { step: (steps.length + 1).toString(), title: '', description: '' };
+                  updateArrayContent([...steps, newStep]);
+                }}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Step
+              </Button>
+            </div>
+            {steps.map((step, index) => (
+              <div key={index} className="border p-4 rounded space-y-3">
+                <div className="flex justify-between">
+                  <h4 className="font-medium">Step {index + 1}</h4>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newSteps = steps.filter((_, i) => i !== index);
+                      updateArrayContent(newSteps);
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <Input
+                  value={step.step || ''}
+                  onChange={(e) => {
+                    const newSteps = [...steps];
+                    newSteps[index] = { ...step, step: e.target.value };
+                    updateArrayContent(newSteps);
+                  }}
+                  placeholder="Step number"
+                />
+                <Input
+                  value={step.title || ''}
+                  onChange={(e) => {
+                    const newSteps = [...steps];
+                    newSteps[index] = { ...step, title: e.target.value };
+                    updateArrayContent(newSteps);
+                  }}
+                  placeholder="Step title"
+                />
+                <Textarea
+                  value={step.description || ''}
+                  onChange={(e) => {
+                    const newSteps = [...steps];
+                    newSteps[index] = { ...step, description: e.target.value };
+                    updateArrayContent(newSteps);
+                  }}
+                  placeholder="Step description"
+                  rows={3}
+                />
+              </div>
+            ))}
           </div>
         );
 
@@ -180,6 +375,51 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, isOpen, o
           </div>
         );
 
+      case 'gallery':
+        const images = editedSection.content?.images || [];
+        return (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <label className="text-sm font-medium">Gallery Images</label>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  const newImages = [...images, ''];
+                  updateContent('images', newImages);
+                }}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Image
+              </Button>
+            </div>
+            {images.map((image, index) => (
+              <div key={index} className="flex gap-2">
+                <Input
+                  value={image}
+                  onChange={(e) => {
+                    const newImages = [...images];
+                    newImages[index] = e.target.value;
+                    updateContent('images', newImages);
+                  }}
+                  placeholder={`Image URL ${index + 1}`}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newImages = images.filter((_, i) => i !== index);
+                    updateContent('images', newImages);
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        );
+
       default:
         return (
           <div className="space-y-4">
@@ -193,6 +433,7 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, isOpen, o
                     setEditedSection(prev => ({ ...prev, content }));
                   } catch (error) {
                     // Invalid JSON, ignore
+                    console.error('Invalid JSON:', error);
                   }
                 }}
                 placeholder="Enter content as JSON"
@@ -216,7 +457,8 @@ export const SectionEditor: React.FC<SectionEditorProps> = ({ section, isOpen, o
 
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex-1 mr-4">
+              <label className="text-sm font-medium mb-2 block">Section Name</label>
               <Input
                 value={editedSection.name}
                 onChange={(e) => setEditedSection(prev => ({ ...prev, name: e.target.value }))}
