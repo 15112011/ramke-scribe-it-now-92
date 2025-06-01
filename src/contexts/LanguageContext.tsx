@@ -71,46 +71,46 @@ const translations = {
     contact: "Contact",
     
     // Hero Section
-    heroTitle: "Become a Stronger Version of Yourself!",
-    heroSubtitle: "Your personal trainer Omar Ashraf will help you achieve your fitness goals and get the perfect body",
-    startJourney: "Start Your Journey Now",
-    viewResults: "View Results",
+    heroTitle: "Transform Your Body, Transform Your Life!",
+    heroSubtitle: "Your certified personal trainer Omar Ashraf will help you achieve your fitness goals and get the perfect physique through science-based training methods",
+    startJourney: "Start Your Transformation",
+    viewResults: "View Success Stories",
     
     // Gallery
-    trainingPhotos: "Training Photos",
+    trainingPhotos: "Training Gallery",
     weightTraining: "Weight Training",
-    strengthExercises: "Strength Exercises",
-    muscleExercises: "Muscle Exercises",
-    fitness: "Fitness",
+    strengthExercises: "Strength Training",
+    muscleExercises: "Muscle Building",
+    fitness: "Fitness Excellence",
     
     // Stats
     available247: "Available 24/7",
-    satisfiedClients: "Satisfied Clients",
+    satisfiedClients: "Happy Clients",
     successRate: "Success Rate",
     yearsExperience: "Years Experience",
     
     // About
     aboutTitle: "Omar Ashraf",
-    aboutDescription: "Certified personal trainer with extensive experience in fitness and nutrition. My goal is to help you achieve your goals and reach the best version of yourself.",
-    certifications: "Certifications",
-    specializations: "Specializations",
+    aboutDescription: "Certified personal trainer with extensive experience in fitness and nutrition. My mission is to help you achieve your goals and become the best version of yourself through personalized training programs.",
+    certifications: "Certifications & Credentials",
+    specializations: "Areas of Expertise",
     
     // Packages
-    choosePackage: "Choose the Package That Suits You",
-    beginner: "Beginner",
+    choosePackage: "Choose Your Perfect Package",
+    beginner: "Starter",
     professional: "Professional",
-    premium: "Premium",
+    premium: "Elite",
     mostPopular: "Most Popular",
     chooseThisPackage: "Choose This Package",
     
     // Contact
-    contactTitle: "Contact Me Now",
-    contactSubtitle: "Start your journey to the perfect body today",
-    whatsapp: "WhatsApp",
-    callMe: "Call Me",
+    contactTitle: "Ready to Transform Your Life?",
+    contactSubtitle: "Start your journey to the perfect body today with personalized guidance",
+    whatsapp: "WhatsApp Now",
+    callMe: "Call Direct",
     
     // Footer
-    footerDescription: "Your certified personal trainer to achieve your fitness goals",
+    footerDescription: "Your certified personal trainer dedicated to helping you achieve your fitness goals",
     services: "Services",
     quickLinks: "Quick Links",
     followMe: "Follow Me",
@@ -151,7 +151,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    throw new error('useLanguage must be used within a LanguageProvider');
   }
   return context;
 };
