@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, Users, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { Star, Users, ChevronLeft, ChevronRight, Quote, Trophy } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { AnimatedSection } from '@/components/AnimatedSection';
@@ -44,6 +44,8 @@ export const InteractiveTestimonials: React.FC = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
+  const currentTest = testimonials[currentTestimonial];
+
   return (
     <section className="py-20 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 transition-all duration-500">
       <div className="container mx-auto px-4">
@@ -72,8 +74,8 @@ export const InteractiveTestimonials: React.FC = () => {
                       <div className="lg:w-1/3">
                         <div className="relative">
                           <img 
-                            src={testimonials[currentTestimonial].image || "/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png"}
-                            alt={testimonials[currentTestimonial].name}
+                            src={currentTest.image || "/lovable-uploads/4fec875e-9e74-4a4f-aedd-29de4c064bc1.png"}
+                            alt={currentTest.name}
                             className="w-48 h-48 object-cover rounded-full mx-auto shadow-2xl"
                           />
                           <div className="absolute -bottom-4 -right-4 bg-green-500 text-white p-3 rounded-full shadow-xl">
@@ -87,22 +89,22 @@ export const InteractiveTestimonials: React.FC = () => {
                         <Quote className="w-12 h-12 text-green-500 mb-6 mx-auto lg:mx-0" />
                         
                         <blockquote className="text-2xl text-gray-700 dark:text-gray-300 leading-relaxed mb-6 italic">
-                          "{testimonials[currentTestimonial].content}"
+                          "{currentTest.content}"
                         </blockquote>
 
                         <div className="flex items-center justify-center lg:justify-start mb-4">
-                          {Array.from({ length: testimonials[currentTestimonial].rating }, (_, star) => (
+                          {Array.from({ length: currentTest.rating }, (_, star) => (
                             <Star key={star} className="w-6 h-6 text-yellow-400 fill-current" />
                           ))}
                         </div>
 
                         <div className="mb-4">
                           <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
-                            {testimonials[currentTestimonial].name}
+                            {currentTest.name}
                           </h3>
-                          {testimonials[currentTestimonial].achievement && (
+                          {currentTest.achievement && (
                             <p className="text-green-600 dark:text-green-400 font-semibold">
-                              {testimonials[currentTestimonial].achievement}
+                              {currentTest.achievement}
                             </p>
                           )}
                         </div>
