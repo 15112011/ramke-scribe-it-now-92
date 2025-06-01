@@ -5,8 +5,6 @@ import { ChevronRight, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { AnimatedSection } from '@/components/AnimatedSection';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import Typed from 'typed.js';
 import { CountUp } from 'countup.js';
 import VanillaTilt from 'vanilla-tilt';
@@ -27,12 +25,23 @@ export const Hero: React.FC = () => {
   const particlesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Initialize AOS (Animate On Scroll)
-    AOS.init({
-      duration: 1000,
-      once: true,
-      offset: 100,
-    });
+    // Initialize AOS (Animate On Scroll) dynamically
+    const initAOS = async () => {
+      try {
+        const AOS = await import('aos');
+        await import('aos/dist/aos.css');
+        
+        AOS.default.init({
+          duration: 1000,
+          once: true,
+          offset: 100,
+        });
+      } catch (error) {
+        console.log('AOS not available, skipping animation');
+      }
+    };
+
+    initAOS();
 
     // Initialize Typed.js for animated text
     if (typedRef.current) {
