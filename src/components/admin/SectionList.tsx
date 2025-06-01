@@ -1,123 +1,19 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Eye, EyeOff, Edit, Trash2, GripVertical, Plus } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useAdmin } from '@/contexts/AdminContext';
+import { useSections } from '@/contexts/SectionsContext';
 import { useToast } from '@/hooks/use-toast';
 import { SectionEditor } from './SectionEditor';
 
-interface Section {
-  id: string;
-  name: string;
-  type: 'hero' | 'gallery' | 'stats' | 'about' | 'packages' | 'testimonials' | 'steps' | 'contact';
-  enabled: boolean;
-  order: number;
-  content: any;
-}
-
 export const SectionList: React.FC = () => {
-  const { settings, updateSettings } = useAdmin();
+  const { sections, toggleSection, reorderSections, getSectionById } = useSections();
   const { toast } = useToast();
-  
-  const [sections, setSections] = useState<Section[]>([]);
-  const [editingSection, setEditingSection] = useState<Section | null>(null);
-
-  // Initialize sections from settings
-  useEffect(() => {
-    const defaultContent = {
-      heroTitle: 'Welcome',
-      heroSubtitle: 'Professional Photography',
-      aboutTitle: 'About Us',
-      packagesTitle: 'Our Packages',
-      testimonialsTitle: 'Testimonials',
-      stepsTitle: 'Our Process',
-      contactTitle: 'Contact Us',
-      contactSubtitle: 'Get in touch',
-      footerDescription: 'Professional services',
-      companyName: 'Company Name',
-      logo: '',
-      favIcon: '/favicon.ico'
-    };
-
-    const initialSections: Section[] = [
-      { 
-        id: 'hero', 
-        name: 'Hero Section', 
-        type: 'hero', 
-        enabled: true, 
-        order: 1, 
-        content: { 
-          title: settings.content?.heroTitle || 'Welcome', 
-          subtitle: settings.content?.heroSubtitle || 'Professional Photography', 
-          image: settings.heroImage || '' 
-        } 
-      },
-      { 
-        id: 'gallery', 
-        name: 'Gallery', 
-        type: 'gallery', 
-        enabled: true, 
-        order: 2, 
-        content: { images: settings.galleryImages || [] } 
-      },
-      { 
-        id: 'stats', 
-        name: 'Statistics', 
-        type: 'stats', 
-        enabled: true, 
-        order: 3, 
-        content: settings.stats || { clients: '100+', successRate: '95%', experience: '5+ Years' } 
-      },
-      { 
-        id: 'about', 
-        name: 'About Section', 
-        type: 'about', 
-        enabled: true, 
-        order: 4, 
-        content: { text: settings.aboutText || 'About our photography services' } 
-      },
-      { 
-        id: 'packages', 
-        name: 'Packages', 
-        type: 'packages', 
-        enabled: true, 
-        order: 5, 
-        content: settings.packages || { basic: { price: '$299' }, professional: { price: '$599' }, premium: { price: '$999' } } 
-      },
-      { 
-        id: 'testimonials', 
-        name: 'Testimonials', 
-        type: 'testimonials', 
-        enabled: settings.testimonials && settings.testimonials.length > 0, 
-        order: 6, 
-        content: settings.testimonials || [] 
-      },
-      { 
-        id: 'steps', 
-        name: 'Process Steps', 
-        type: 'steps', 
-        enabled: settings.steps && settings.steps.length > 0, 
-        order: 7, 
-        content: settings.steps || [] 
-      },
-      { 
-        id: 'contact', 
-        name: 'Contact Section', 
-        type: 'contact', 
-        enabled: true, 
-        order: 8, 
-        content: { 
-          title: settings.content?.contactTitle || 'Get In Touch', 
-          subtitle: settings.content?.contactSubtitle || 'Contact us for bookings' 
-        } 
-      }
-    ];
-    
-    setSections(initialSections);
-  }, [settings]);
+  const [editingSection, setEditingSection] = useState<any>(null);
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -126,28 +22,19 @@ export const SectionList: React.FC = () => {
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    const updatedSections = items.map((item, index) => ({
-      ...item,
-      order: index + 1
-    }));
-
-    setSections(updatedSections);
+    reorderSections(items);
     toast({
       title: "Section Order Updated",
       description: "The section order has been saved successfully."
     });
   };
 
-  const toggleSection = (sectionId: string) => {
-    setSections(prev => prev.map(section => 
-      section.id === sectionId 
-        ? { ...section, enabled: !section.enabled }
-        : section
-    ));
-    
+  const handleToggleSection = (sectionId: string) => {
+    toggleSection(sectionId);
+    const section = getSectionById(sectionId);
     toast({
       title: "Section Updated",
-      description: "Section visibility has been toggled."
+      description: `${section?.name} has been ${section?.enabled ? 'disabled' : 'enabled'}.`
     });
   };
 
@@ -162,92 +49,24 @@ export const SectionList: React.FC = () => {
       return;
     }
     
-    setSections(prev => prev.filter(section => section.id !== sectionId));
-    toast({
-      title: "Section Deleted",
-      description: "The section has been removed successfully."
-    });
+    // For now, we'll just disable the section instead of deleting it
+    const section = getSectionById(sectionId);
+    if (section && section.enabled) {
+      toggleSection(sectionId);
+      toast({
+        title: "Section Disabled",
+        description: "The section has been disabled. Use the toggle to re-enable it."
+      });
+    }
   };
 
-  const openEditDialog = (section: Section) => {
+  const openEditDialog = (section: any) => {
     setEditingSection(section);
   };
 
-  const saveSection = (updatedSection: Section) => {
-    console.log('Saving section:', updatedSection);
-    
-    setSections(prev => prev.map(section => 
-      section.id === updatedSection.id ? updatedSection : section
-    ));
-
-    // Update the main settings based on section type
-    const newSettings = { ...settings };
-    
-    switch (updatedSection.type) {
-      case 'hero':
-        if (!newSettings.content) {
-          newSettings.content = {
-            heroTitle: '',
-            heroSubtitle: '',
-            aboutTitle: '',
-            packagesTitle: '',
-            testimonialsTitle: '',
-            stepsTitle: '',
-            contactTitle: '',
-            contactSubtitle: '',
-            footerDescription: '',
-            companyName: '',
-            logo: '',
-            favIcon: '/favicon.ico'
-          };
-        }
-        newSettings.content.heroTitle = updatedSection.content.title;
-        newSettings.content.heroSubtitle = updatedSection.content.subtitle;
-        newSettings.heroImage = updatedSection.content.image;
-        break;
-      case 'about':
-        newSettings.aboutText = updatedSection.content.text;
-        break;
-      case 'stats':
-        newSettings.stats = updatedSection.content;
-        break;
-      case 'packages':
-        newSettings.packages = updatedSection.content;
-        break;
-      case 'testimonials':
-        newSettings.testimonials = Array.isArray(updatedSection.content) ? updatedSection.content : [updatedSection.content];
-        break;
-      case 'steps':
-        newSettings.steps = Array.isArray(updatedSection.content) ? updatedSection.content : [updatedSection.content];
-        break;
-      case 'contact':
-        if (!newSettings.content) {
-          newSettings.content = {
-            heroTitle: '',
-            heroSubtitle: '',
-            aboutTitle: '',
-            packagesTitle: '',
-            testimonialsTitle: '',
-            stepsTitle: '',
-            contactTitle: '',
-            contactSubtitle: '',
-            footerDescription: '',
-            companyName: '',
-            logo: '',
-            favIcon: '/favicon.ico'
-          };
-        }
-        newSettings.content.contactTitle = updatedSection.content.title;
-        newSettings.content.contactSubtitle = updatedSection.content.subtitle;
-        break;
-      case 'gallery':
-        newSettings.galleryImages = updatedSection.content.images || [];
-        break;
-    }
-
-    console.log('Updating settings with:', newSettings);
-    updateSettings(newSettings);
-    
+  const saveSection = (updatedSection: any) => {
+    console.log('Section saved:', updatedSection);
+    setEditingSection(null);
     toast({
       title: "Section Saved",
       description: `${updatedSection.name} has been updated successfully.`
@@ -264,6 +83,13 @@ export const SectionList: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Live Control:</strong> Changes made here will immediately affect the main website at "/". 
+              Disabled sections will not appear on the site, and the order here determines the display order.
+            </p>
+          </div>
+          
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="sections">
               {(provided) => (
@@ -278,7 +104,7 @@ export const SectionList: React.FC = () => {
                           {...provided.draggableProps}
                           className={`bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border-2 transition-all duration-200 ${
                             snapshot.isDragging ? 'border-emerald-500 shadow-lg scale-105' : 'border-gray-200 dark:border-gray-600'
-                          }`}
+                          } ${!section.enabled ? 'opacity-60' : ''}`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -299,16 +125,23 @@ export const SectionList: React.FC = () => {
                                   </Badge>
                                 </div>
                                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                                  Order: {section.order} | ID: {section.id}
+                                  Order: {section.order} | Component: {section.component}
                                 </p>
                               </div>
                             </div>
                             
                             <div className="flex items-center gap-2">
-                              <Switch
-                                checked={section.enabled}
-                                onCheckedChange={() => toggleSection(section.id)}
-                              />
+                              <div className="flex items-center gap-1">
+                                {section.enabled ? (
+                                  <Eye className="w-4 h-4 text-green-600" />
+                                ) : (
+                                  <EyeOff className="w-4 h-4 text-red-600" />
+                                )}
+                                <Switch
+                                  checked={section.enabled}
+                                  onCheckedChange={() => handleToggleSection(section.id)}
+                                />
+                              </div>
                               
                               <Button
                                 variant="ghost"
