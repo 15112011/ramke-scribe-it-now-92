@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Settings, Database } from 'lucide-react';
+import { Save, Settings, Database, BarChart3, Plus } from 'lucide-react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
-import { AdminSectionCRUD } from './AdminSectionCRUD';
+import { ComprehensiveAdmin } from './admin/ComprehensiveAdmin';
 
 export const SectionManager: React.FC = () => {
   const { settings, updateSettings } = useAdmin();
@@ -29,23 +29,23 @@ export const SectionManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="sections" className="w-full">
+      <Tabs defaultValue="comprehensive" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="sections" className="flex items-center gap-2">
-            <Database className="w-4 h-4" />
-            Section CRUD
+          <TabsTrigger value="comprehensive" className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            Comprehensive Admin
           </TabsTrigger>
-          <TabsTrigger value="settings" className="flex items-center gap-2">
+          <TabsTrigger value="legacy" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
-            Content Settings
+            Legacy Settings
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="sections" className="space-y-6">
-          <AdminSectionCRUD />
+        <TabsContent value="comprehensive" className="space-y-6">
+          <ComprehensiveAdmin />
         </TabsContent>
 
-        <TabsContent value="settings" className="space-y-6">
+        <TabsContent value="legacy" className="space-y-6">
           {/* Content Settings */}
           <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardHeader>
