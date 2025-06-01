@@ -4,12 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Edit, GripVertical, Eye, Paintbrush } from 'lucide-react';
+import { Edit, GripVertical } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useSections, SectionConfig } from '@/contexts/SectionsContext';
 import { useToast } from '@/hooks/use-toast';
 import { SectionEditor } from './SectionEditor';
-import { LiveSectionEditor } from './LiveSectionEditor';
 
 // Interface for the legacy SectionEditor component
 interface LegacySection {
@@ -24,7 +23,6 @@ export const SectionList: React.FC = () => {
   const { sections, toggleSection, reorderSections } = useSections();
   const { toast } = useToast();
   const [editingSection, setEditingSection] = useState<LegacySection | null>(null);
-  const [liveEditingSection, setLiveEditingSection] = useState<string | null>(null);
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -74,7 +72,6 @@ export const SectionList: React.FC = () => {
           <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <p className="text-sm text-blue-700 dark:text-blue-300">
               Drag and drop sections to reorder them. Toggle switches to enable/disable sections on your website.
-              Use the Live Editor for visual editing with drag-and-drop positioning.
             </p>
           </div>
 
@@ -127,19 +124,9 @@ export const SectionList: React.FC = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setLiveEditingSection(section.id)}
-                                className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                                title="Live Editor"
-                              >
-                                <Paintbrush className="w-4 h-4" />
-                              </Button>
-                              
-                              <Button
-                                variant="ghost"
-                                size="sm"
                                 onClick={() => setEditingSection(convertToLegacySection(section))}
                                 className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                                title="Advanced Editor"
+                                title="Edit Section"
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -157,22 +144,13 @@ export const SectionList: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Legacy Section Editor */}
+      {/* Section Editor */}
       {editingSection && (
         <SectionEditor
           section={editingSection}
           isOpen={!!editingSection}
           onClose={() => setEditingSection(null)}
           onSave={handleSaveSection}
-        />
-      )}
-
-      {/* Live Section Editor */}
-      {liveEditingSection && (
-        <LiveSectionEditor
-          sectionId={liveEditingSection}
-          isOpen={!!liveEditingSection}
-          onClose={() => setLiveEditingSection(null)}
         />
       )}
     </div>

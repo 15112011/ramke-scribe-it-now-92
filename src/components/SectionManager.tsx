@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Settings, Database, BarChart3, Plus } from 'lucide-react';
+import { Save, Settings, Database, BarChart3, CreditCard } from 'lucide-react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useToast } from '@/hooks/use-toast';
 import { ComprehensiveAdmin } from './admin/ComprehensiveAdmin';
+import { SubscriptionPayment } from './SubscriptionPayment';
 
 export const SectionManager: React.FC = () => {
   const { settings, updateSettings } = useAdmin();
@@ -30,10 +31,14 @@ export const SectionManager: React.FC = () => {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="comprehensive" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="comprehensive" className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             Comprehensive Admin
+          </TabsTrigger>
+          <TabsTrigger value="subscriptions" className="flex items-center gap-2">
+            <CreditCard className="w-4 h-4" />
+            Subscriptions
           </TabsTrigger>
           <TabsTrigger value="legacy" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -43,6 +48,10 @@ export const SectionManager: React.FC = () => {
 
         <TabsContent value="comprehensive" className="space-y-6">
           <ComprehensiveAdmin />
+        </TabsContent>
+
+        <TabsContent value="subscriptions" className="space-y-6">
+          <SubscriptionPayment />
         </TabsContent>
 
         <TabsContent value="legacy" className="space-y-6">
