@@ -65,23 +65,60 @@ export const SectionManager: React.FC = () => {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Hero Section</h3>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Title</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Title (Arabic)</label>
                   <Input
-                    value={tempSettings.content.heroTitle}
+                    value={tempSettings.content.heroTitle.ar}
                     onChange={(e) => setTempSettings(prev => ({
                       ...prev,
-                      content: { ...prev.content, heroTitle: e.target.value }
+                      content: { 
+                        ...prev.content, 
+                        heroTitle: { ...prev.content.heroTitle, ar: e.target.value }
+                      }
+                    }))}
+                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                    dir="rtl"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Title (English)</label>
+                  <Input
+                    value={tempSettings.content.heroTitle.en}
+                    onChange={(e) => setTempSettings(prev => ({
+                      ...prev,
+                      content: { 
+                        ...prev.content, 
+                        heroTitle: { ...prev.content.heroTitle, en: e.target.value }
+                      }
                     }))}
                     className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Subtitle</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Subtitle (Arabic)</label>
                   <Textarea
-                    value={tempSettings.content.heroSubtitle}
+                    value={tempSettings.content.heroSubtitle.ar}
                     onChange={(e) => setTempSettings(prev => ({
                       ...prev,
-                      content: { ...prev.content, heroSubtitle: e.target.value }
+                      content: { 
+                        ...prev.content, 
+                        heroSubtitle: { ...prev.content.heroSubtitle, ar: e.target.value }
+                      }
+                    }))}
+                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                    rows={3}
+                    dir="rtl"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Hero Subtitle (English)</label>
+                  <Textarea
+                    value={tempSettings.content.heroSubtitle.en}
+                    onChange={(e) => setTempSettings(prev => ({
+                      ...prev,
+                      content: { 
+                        ...prev.content, 
+                        heroSubtitle: { ...prev.content.heroSubtitle, en: e.target.value }
+                      }
                     }))}
                     className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                     rows={3}
@@ -104,12 +141,25 @@ export const SectionManager: React.FC = () => {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">About Section</h3>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">About Text</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">About Text (Arabic)</label>
                   <Textarea
-                    value={tempSettings.aboutText}
+                    value={tempSettings.aboutText.ar}
                     onChange={(e) => setTempSettings(prev => ({
                       ...prev,
-                      aboutText: e.target.value
+                      aboutText: { ...prev.aboutText, ar: e.target.value }
+                    }))}
+                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                    rows={4}
+                    dir="rtl"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">About Text (English)</label>
+                  <Textarea
+                    value={tempSettings.aboutText.en}
+                    onChange={(e) => setTempSettings(prev => ({
+                      ...prev,
+                      aboutText: { ...prev.aboutText, en: e.target.value }
                     }))}
                     className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
                     rows={4}

@@ -1,102 +1,179 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Globe, Moon, Sun, Settings } from 'lucide-react';
+import { Menu, X, Globe, Settings } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTheme } from 'next-themes';
 import { useAdmin } from '@/contexts/AdminContext';
-import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
-  const { language, setLanguage, t } = useLanguage();
-  const { theme, setTheme } = useTheme();
-  const { isAdminMode, toggleAdminMode, settings } = useAdmin();
-  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { language, setLanguage } = useLanguage();
+  const { settings, toggleAdminMode, isAdminMode } = useAdmin();
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMenuOpen(false);
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm transition-colors duration-300 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <img 
-            src={settings.content.logo} 
-            alt="Omar Ashraf Logo"
-            className="w-12 h-12 transform transition-transform duration-300 hover:scale-110"
-          />
-        </div>
-        
-        <nav className="hidden md:flex space-x-reverse space-x-6">
-          <a href="#home" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {settings.sectionTitles.home}
-          </a>
-          <a href="#about" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {settings.sectionTitles.about}
-          </a>
-          <a href="#packages" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {settings.sectionTitles.packages}
-          </a>
-          <a href="#contact" className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-all duration-300 relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-green-600 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">
-            {settings.sectionTitles.contact}
-          </a>
-        </nav>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg' 
+        : 'bg-transparent'
+    }`}>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center space-x-2">
+            <img 
+              src={settings.content.logo} 
+              alt="Logo" 
+              className="h-10 w-10 object-contain"
+            />
+            <span className={`font-bold text-xl ${
+              isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'
+            }`}>
+              {language === 'ar' ? settings.content.companyName.ar : settings.content.companyName.en}
+            </span>
+          </div>
 
-        <div className="flex items-center gap-4">
-          {/* Language Toggle */}
-          <div className="flex items-center gap-2">
-            <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <button
+              onClick={() => scrollToSection('hero')}
+              className={`font-medium transition-colors ${
+                isScrolled 
+                  ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
+                  : 'text-white hover:text-emerald-200'
+              }`}
+            >
+              {language === 'ar' ? settings.sectionTitles.home.ar : settings.sectionTitles.home.en}
+            </button>
+            <button
+              onClick={() => scrollToSection('about')}
+              className={`font-medium transition-colors ${
+                isScrolled 
+                  ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
+                  : 'text-white hover:text-emerald-200'
+              }`}
+            >
+              {language === 'ar' ? settings.sectionTitles.about.ar : settings.sectionTitles.about.en}
+            </button>
+            <button
+              onClick={() => scrollToSection('packages')}
+              className={`font-medium transition-colors ${
+                isScrolled 
+                  ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
+                  : 'text-white hover:text-emerald-200'
+              }`}
+            >
+              {language === 'ar' ? settings.sectionTitles.packages.ar : settings.sectionTitles.packages.en}
+            </button>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className={`font-medium transition-colors ${
+                isScrolled 
+                  ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
+                  : 'text-white hover:text-emerald-200'
+              }`}
+            >
+              {language === 'ar' ? settings.sectionTitles.contact.ar : settings.sectionTitles.contact.en}
+            </button>
+          </nav>
+
+          {/* Controls */}
+          <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLanguage(language === 'ar' ? 'en' : 'ar')}
-              className="text-sm transform transition-transform duration-200 hover:scale-105"
+              onClick={toggleLanguage}
+              className={`${
+                isScrolled 
+                  ? 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
+                  : 'text-white hover:bg-white/20'
+              }`}
             >
+              <Globe className="w-4 h-4 mr-1" />
               {language === 'ar' ? 'EN' : 'ع'}
             </Button>
-          </div>
 
-          {/* Theme Toggle */}
-          <div className="flex items-center gap-2">
-            {theme === 'light' ? (
-              <Sun className="w-4 h-4 text-gray-600 transition-transform duration-300 hover:rotate-12" />
-            ) : (
-              <Moon className="w-4 h-4 text-gray-400 transition-transform duration-300 hover:rotate-12" />
-            )}
-            <Switch
-              checked={theme === 'dark'}
-              onCheckedChange={toggleTheme}
-            />
-          </div>
-
-          {/* Admin Toggle */}
-          <div className="flex items-center gap-2">
-            <Settings className="w-4 h-4 text-gray-600 dark:text-gray-400 transition-transform duration-300 hover:rotate-90" />
-            <Switch
-              checked={isAdminMode}
-              onCheckedChange={toggleAdminMode}
-            />
-          </div>
-
-          {/* Admin Panel Button - Only show if admin mode is enabled */}
-          {isAdminMode && (
-            <Button 
-              onClick={() => navigate('/admin')}
-              variant="outline"
+            <Button
+              variant="ghost"
               size="sm"
-              className="border-green-500 text-green-600 hover:bg-green-500 hover:text-white dark:border-green-400 dark:text-green-400 transform transition-all duration-300 hover:scale-105"
+              onClick={toggleAdminMode}
+              className={`${
+                isScrolled 
+                  ? 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
+                  : 'text-white hover:bg-white/20'
+              } ${isAdminMode ? 'bg-emerald-100 dark:bg-emerald-900' : ''}`}
             >
-              <Settings className="w-4 h-4 mr-2" />
-              {settings.buttons.admin}
+              <Settings className="w-4 h-4 mr-1" />
+              {language === 'ar' ? settings.buttons.admin.ar : settings.buttons.admin.en}
             </Button>
-          )}
 
-          <Button className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 transform transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-            {settings.sectionTitles.contact}
-          </Button>
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`md:hidden ${
+                isScrolled 
+                  ? 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
+                  : 'text-white hover:bg-white/20'
+              }`}
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <nav className="py-4 space-y-2">
+              <button
+                onClick={() => scrollToSection('hero')}
+                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {language === 'ar' ? settings.sectionTitles.home.ar : settings.sectionTitles.home.en}
+              </button>
+              <button
+                onClick={() => scrollToSection('about')}
+                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {language === 'ar' ? settings.sectionTitles.about.ar : settings.sectionTitles.about.en}
+              </button>
+              <button
+                onClick={() => scrollToSection('packages')}
+                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {language === 'ar' ? settings.sectionTitles.packages.ar : settings.sectionTitles.packages.en}
+              </button>
+              <button
+                onClick={() => scrollToSection('contact')}
+                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                {language === 'ar' ? settings.sectionTitles.contact.ar : settings.sectionTitles.contact.en}
+              </button>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
