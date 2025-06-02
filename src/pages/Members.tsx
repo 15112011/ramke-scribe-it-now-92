@@ -26,14 +26,17 @@ import {
   Dumbbell,
   Apple,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Timer
 } from 'lucide-react';
 
 const Members: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [userPlan, setUserPlan] = useState('');
+  const [userExpiry, setUserExpiry] = useState('');
   const [trainingResources, setTrainingResources] = useState<TrainingResource[]>([]);
   const [videoResources, setVideoResources] = useState<VideoResource[]>([]);
   const [dailyUsage, setDailyUsage] = useState<DailyUsage>({
@@ -42,6 +45,8 @@ const Members: React.FC = () => {
     trainingsAccessed: 0,
     videosAccessed: 0
   });
+  const [canAttemptLogin, setCanAttemptLogin] = useState(true);
+  const [remainingTime, setRemainingTime] = useState(0);
   const { language } = useLanguage();
   const { toast } = useToast();
 
@@ -50,12 +55,36 @@ const Members: React.FC = () => {
     const savedAuth = localStorage.getItem('memberAuth');
     if (savedAuth) {
       const authData = JSON.parse(savedAuth);
-      setIsAuthorized(true);
-      setEmail(authData.email);
-      setUserPlan(authData.plan);
-      loadUserData(authData.email);
+      // Verify the session is still valid
+      const authResult = subscriptionStorage.authenticateUser(authData.email, authData.password);
+      if (authResult.success && authResult.user) {
+        setIsAuthorized(true);
+        setEmail(authData.email);
+        setUserPlan(authResult.user.selectedPlan);
+        setUserExpiry(authResult.user.accessExpiryDate || '');
+        loadUserData(authData.email);
+      } else {
+        localStorage.removeItem('memberAuth');
+      }
     }
   }, []);
+
+  // Countdown timer for login attempts
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (remainingTime > 0) {
+      interval = setInterval(() => {
+        setRemainingTime((prev) => {
+          if (prev <= 1) {
+            setCanAttemptLogin(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [remainingTime]);
 
   const loadUserData = (userEmail: string) => {
     setTrainingResources(subscriptionStorage.getTrainingResources().filter(r => r.enabled));
@@ -64,12 +93,23 @@ const Members: React.FC = () => {
   };
 
   const handleVerifyAccess = () => {
-    if (!email) {
+    if (!email || !password) {
       toast({
         title: language === 'ar' ? 'خطأ' : 'Error',
         description: language === 'ar' 
-          ? 'يرجى إدخال البريد الإلكتروني'
-          : 'Please enter your email address',
+          ? 'يرجى إدخال البريد الإلكتروني وكلمة المرور'
+          : 'Please enter your email and password',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (!canAttemptLogin) {
+      toast({
+        title: language === 'ar' ? 'انتظر قليلاً' : 'Please Wait',
+        description: language === 'ar' 
+          ? `يرجى الانتظار ${remainingTime} ثانية قبل المحاولة مرة أخرى`
+          : `Please wait ${remainingTime} seconds before trying again`,
         variant: 'destructive'
       });
       return;
@@ -77,20 +117,19 @@ const Members: React.FC = () => {
 
     setIsVerifying(true);
 
-    // Check if email is in approved users
-    const approvedUsers = subscriptionStorage.getApprovedUsers();
-    const allRequests = subscriptionStorage.getAllRequests();
-    const userRequest = allRequests.find(req => req.email === email && req.status === 'approved');
-
     setTimeout(() => {
-      if (approvedUsers.includes(email) && userRequest) {
+      const authResult = subscriptionStorage.authenticateUser(email, password);
+      
+      if (authResult.success && authResult.user) {
         setIsAuthorized(true);
-        setUserPlan(userRequest.selectedPlan);
+        setUserPlan(authResult.user.selectedPlan);
+        setUserExpiry(authResult.user.accessExpiryDate || '');
         
         // Save auth state
         localStorage.setItem('memberAuth', JSON.stringify({
           email: email,
-          plan: userRequest.selectedPlan,
+          password: password,
+          plan: authResult.user.selectedPlan,
           loginTime: new Date().toISOString()
         }));
 
@@ -99,15 +138,20 @@ const Members: React.FC = () => {
         toast({
           title: language === 'ar' ? 'مرحباً بك!' : 'Welcome!',
           description: language === 'ar' 
-            ? 'تم التحقق من وصولك بنجاح'
-            : 'Access verified successfully',
+            ? 'تم تسجيل الدخول بنجاح'
+            : 'Successfully logged in',
         });
       } else {
+        // Record failed attempt
+        subscriptionStorage.recordLoginAttempt(email);
+        setCanAttemptLogin(false);
+        setRemainingTime(60); // 1 minute countdown
+        
         toast({
-          title: language === 'ar' ? 'وصول مرفوض' : 'Access Denied',
-          description: language === 'ar' 
-            ? 'البريد الإلكتروني غير مُصرح له أو لم تتم الموافقة على الطلب بعد'
-            : 'Email not authorized or application not yet approved',
+          title: language === 'ar' ? 'فشل تسجيل الدخول' : 'Login Failed',
+          description: authResult.message || (language === 'ar' 
+            ? 'بيانات الدخول غير صحيحة أو منتهية الصلاحية'
+            : 'Invalid credentials or expired access'),
           variant: 'destructive'
         });
       }
@@ -119,7 +163,9 @@ const Members: React.FC = () => {
     localStorage.removeItem('memberAuth');
     setIsAuthorized(false);
     setEmail('');
+    setPassword('');
     setUserPlan('');
+    setUserExpiry('');
     toast({
       title: language === 'ar' ? 'تم تسجيل الخروج' : 'Logged Out',
       description: language === 'ar' 
@@ -186,8 +232,8 @@ const Members: React.FC = () => {
               </CardTitle>
               <p className="text-gray-600">
                 {language === 'ar' 
-                  ? 'أدخل بريدك الإلكتروني للوصول إلى المحتوى الحصري'
-                  : 'Enter your email to access exclusive content'
+                  ? 'أدخل بياناتك للوصول إلى المحتوى الحصري'
+                  : 'Enter your credentials to access exclusive content'
                 }
               </p>
             </CardHeader>
@@ -199,19 +245,33 @@ const Members: React.FC = () => {
                   placeholder={language === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Input
+                  type="password"
+                  placeholder={language === 'ar' ? 'كلمة المرور' : 'Password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleVerifyAccess()}
                 />
               </div>
               
               <Button 
                 onClick={handleVerifyAccess}
-                disabled={isVerifying}
+                disabled={isVerifying || !canAttemptLogin}
                 className="w-full"
               >
                 {isVerifying ? (
                   <>
                     <Clock className="w-4 h-4 mr-2 animate-spin" />
                     {language === 'ar' ? 'جاري التحقق...' : 'Verifying...'}
+                  </>
+                ) : !canAttemptLogin ? (
+                  <>
+                    <Timer className="w-4 h-4 mr-2" />
+                    {language === 'ar' ? `انتظر ${remainingTime}ث` : `Wait ${remainingTime}s`}
                   </>
                 ) : (
                   <>
@@ -228,6 +288,14 @@ const Members: React.FC = () => {
                     : 'Available only to authorized members'
                   }
                 </p>
+                {!canAttemptLogin && (
+                  <p className="text-red-500 mt-2">
+                    {language === 'ar' 
+                      ? 'يجب الانتظار دقيقة واحدة بين محاولات تسجيل الدخول'
+                      : '1-minute delay between login attempts'
+                    }
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -253,9 +321,16 @@ const Members: React.FC = () => {
                 <p className="text-emerald-100 mb-4">
                   {language === 'ar' ? `مرحباً ${email}` : `Welcome ${email}`}
                 </p>
-                <Badge className="bg-white text-emerald-600">
-                  {language === 'ar' ? `باقة ${userPlan}` : `${userPlan} Plan`}
-                </Badge>
+                <div className="flex gap-2 flex-wrap">
+                  <Badge className="bg-white text-emerald-600">
+                    {language === 'ar' ? `باقة ${userPlan}` : `${userPlan} Plan`}
+                  </Badge>
+                  {userExpiry && (
+                    <Badge variant="outline" className="bg-emerald-500 text-white border-white">
+                      {language === 'ar' ? 'تنتهي في:' : 'Expires:'} {new Date(userExpiry).toLocaleDateString()}
+                    </Badge>
+                  )}
+                </div>
               </div>
               <Button variant="outline" onClick={handleLogout} className="border-white text-white hover:bg-white hover:text-emerald-600">
                 {language === 'ar' ? 'تسجيل خروج' : 'Logout'}

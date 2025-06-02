@@ -7,9 +7,12 @@ export interface SubscriptionRequest {
   selectedPlan: string;
   goals: string;
   paymentScreenshot: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'blocked';
   submittedAt: string;
   planPrice: string;
+  password?: string;
+  accessExpiryDate?: string;
+  accessDurationMonths?: number;
 }
 
 export interface DailyUsage {
@@ -36,6 +39,12 @@ export interface VideoResource {
   enabled: boolean;
 }
 
+export interface LoginAttempt {
+  email: string;
+  lastAttempt: string;
+  attemptCount: number;
+}
+
 export const subscriptionStorage = {
   // Get all subscription requests
   getAllRequests: (): SubscriptionRequest[] => {
@@ -59,7 +68,7 @@ export const subscriptionStorage = {
   },
 
   // Update request status
-  updateRequestStatus: (id: string, status: 'pending' | 'approved' | 'rejected'): void => {
+  updateRequestStatus: (id: string, status: 'pending' | 'approved' | 'rejected' | 'blocked'): void => {
     const requests = subscriptionStorage.getAllRequests();
     const updatedRequests = requests.map(req => 
       req.id === id ? { ...req, status } : req
@@ -67,11 +76,94 @@ export const subscriptionStorage = {
     localStorage.setItem('subscriptionRequests', JSON.stringify(updatedRequests));
   },
 
+  // Set user password and access duration
+  setUserAccess: (id: string, password: string, durationMonths: number): void => {
+    const requests = subscriptionStorage.getAllRequests();
+    const expiryDate = new Date();
+    expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
+    
+    const updatedRequests = requests.map(req => 
+      req.id === id ? { 
+        ...req, 
+        password,
+        accessDurationMonths: durationMonths,
+        accessExpiryDate: expiryDate.toISOString(),
+        status: 'approved' as const
+      } : req
+    );
+    localStorage.setItem('subscriptionRequests', JSON.stringify(updatedRequests));
+  },
+
+  // Block user
+  blockUser: (id: string): void => {
+    subscriptionStorage.updateRequestStatus(id, 'blocked');
+  },
+
+  // Authenticate user
+  authenticateUser: (email: string, password: string): { success: boolean; user?: SubscriptionRequest; message?: string } => {
+    const requests = subscriptionStorage.getAllRequests();
+    const user = requests.find(req => req.email === email && req.status === 'approved');
+    
+    if (!user) {
+      return { success: false, message: 'User not found or not approved' };
+    }
+
+    if (user.status === 'blocked') {
+      return { success: false, message: 'Account has been blocked' };
+    }
+
+    if (user.accessExpiryDate && new Date() > new Date(user.accessExpiryDate)) {
+      return { success: false, message: 'Access has expired' };
+    }
+
+    if (user.password !== password) {
+      return { success: false, message: 'Invalid password' };
+    }
+
+    return { success: true, user };
+  },
+
+  // Check if user can attempt login (1 minute delay)
+  canAttemptLogin: (email: string): boolean => {
+    const attempts = localStorage.getItem('loginAttempts');
+    const loginAttempts: LoginAttempt[] = attempts ? JSON.parse(attempts) : [];
+    
+    const userAttempt = loginAttempts.find(attempt => attempt.email === email);
+    if (!userAttempt) return true;
+
+    const oneMinuteAgo = new Date(Date.now() - 60000);
+    return new Date(userAttempt.lastAttempt) < oneMinuteAgo;
+  },
+
+  // Record login attempt
+  recordLoginAttempt: (email: string): void => {
+    const attempts = localStorage.getItem('loginAttempts');
+    const loginAttempts: LoginAttempt[] = attempts ? JSON.parse(attempts) : [];
+    
+    const existingIndex = loginAttempts.findIndex(attempt => attempt.email === email);
+    
+    if (existingIndex >= 0) {
+      loginAttempts[existingIndex] = {
+        email,
+        lastAttempt: new Date().toISOString(),
+        attemptCount: loginAttempts[existingIndex].attemptCount + 1
+      };
+    } else {
+      loginAttempts.push({
+        email,
+        lastAttempt: new Date().toISOString(),
+        attemptCount: 1
+      });
+    }
+    
+    localStorage.setItem('loginAttempts', JSON.stringify(loginAttempts));
+  },
+
   // Get approved users (for member access)
   getApprovedUsers: (): string[] => {
     const requests = subscriptionStorage.getAllRequests();
     return requests
-      .filter(req => req.status === 'approved')
+      .filter(req => req.status === 'approved' && (!req.accessExpiryDate || new Date() <= new Date(req.accessExpiryDate)))
       .map(req => req.email);
   },
 

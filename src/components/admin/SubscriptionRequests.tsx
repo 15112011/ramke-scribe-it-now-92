@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { 
   Check, 
   X, 
@@ -12,7 +12,11 @@ import {
   Calendar,
   CreditCard,
   User,
-  MessageSquare
+  MessageSquare,
+  Shield,
+  Lock,
+  Clock,
+  Ban
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -27,6 +31,9 @@ export const SubscriptionRequests: React.FC = () => {
   const [requests, setRequests] = useState<SubscriptionRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<SubscriptionRequest | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [accessMonths, setAccessMonths] = useState(1);
   const { toast } = useToast();
 
   // Load requests on component mount
@@ -34,13 +41,31 @@ export const SubscriptionRequests: React.FC = () => {
     setRequests(subscriptionStorage.getAllRequests());
   }, []);
 
-  const handleApprove = (requestId: string) => {
-    subscriptionStorage.updateRequestStatus(requestId, 'approved');
+  const handleApprove = (request: SubscriptionRequest) => {
+    setSelectedRequest(request);
+    setIsApprovalModalOpen(true);
+  };
+
+  const handleApprovalConfirm = () => {
+    if (!selectedRequest || !password) {
+      toast({
+        title: "Error",
+        description: "Please set a password for the user.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    subscriptionStorage.setUserAccess(selectedRequest.id, password, accessMonths);
     setRequests(subscriptionStorage.getAllRequests());
+    setIsApprovalModalOpen(false);
+    setPassword('');
+    setAccessMonths(1);
+    setSelectedRequest(null);
     
     toast({
       title: "Application Approved",
-      description: "The client now has access to the member area.",
+      description: `Access granted for ${accessMonths} month(s). Password set successfully.`,
       variant: "default"
     });
   };
@@ -56,6 +81,17 @@ export const SubscriptionRequests: React.FC = () => {
     });
   };
 
+  const handleBlock = (requestId: string) => {
+    subscriptionStorage.blockUser(requestId);
+    setRequests(subscriptionStorage.getAllRequests());
+    
+    toast({
+      title: "User Blocked",
+      description: "The user has been blocked from accessing the platform.",
+      variant: "destructive"
+    });
+  };
+
   const openDetailModal = (request: SubscriptionRequest) => {
     setSelectedRequest(request);
     setIsDetailModalOpen(true);
@@ -66,7 +102,18 @@ export const SubscriptionRequests: React.FC = () => {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'approved': return 'bg-green-100 text-green-800';
       case 'rejected': return 'bg-red-100 text-red-800';
+      case 'blocked': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending': return <Clock className="w-4 h-4" />;
+      case 'approved': return <Check className="w-4 h-4" />;
+      case 'rejected': return <X className="w-4 h-4" />;
+      case 'blocked': return <Ban className="w-4 h-4" />;
+      default: return <User className="w-4 h-4" />;
     }
   };
 
@@ -83,6 +130,9 @@ export const SubscriptionRequests: React.FC = () => {
           </Badge>
           <Badge variant="outline" className="bg-green-50">
             {processedRequests.filter(r => r.status === 'approved').length} Approved
+          </Badge>
+          <Badge variant="outline" className="bg-gray-50">
+            {processedRequests.filter(r => r.status === 'blocked').length} Blocked
           </Badge>
         </div>
       </div>
@@ -119,7 +169,8 @@ export const SubscriptionRequests: React.FC = () => {
                       </div>
                     </div>
                     <Badge className={getStatusColor(request.status)}>
-                      {request.status}
+                      {getStatusIcon(request.status)}
+                      <span className="ml-1">{request.status}</span>
                     </Badge>
                   </div>
                 </CardHeader>
@@ -166,7 +217,7 @@ export const SubscriptionRequests: React.FC = () => {
                     <Button
                       variant="default"
                       size="sm"
-                      onClick={() => handleApprove(request.id)}
+                      onClick={() => handleApprove(request)}
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Check className="w-4 h-4 mr-1" />
@@ -191,33 +242,44 @@ export const SubscriptionRequests: React.FC = () => {
       {/* Processed Requests */}
       {processedRequests.length > 0 && (
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-gray-700">Recent Decisions</h3>
+          <h3 className="text-lg font-semibold mb-4 text-gray-700">User Management</h3>
           <div className="grid gap-3">
-            {processedRequests.slice(0, 5).map((request) => (
+            {processedRequests.map((request) => (
               <Card key={request.id} className="border-l-4 border-l-gray-300">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        request.status === 'approved' ? 'bg-green-100' : 'bg-red-100'
+                        request.status === 'approved' ? 'bg-green-100' : 
+                        request.status === 'blocked' ? 'bg-gray-100' : 'bg-red-100'
                       }`}>
-                        {request.status === 'approved' ? 
-                          <Check className="w-4 h-4 text-green-600" /> : 
-                          <X className="w-4 h-4 text-red-600" />
-                        }
+                        {getStatusIcon(request.status)}
                       </div>
                       <div>
                         <p className="font-medium">{request.name}</p>
                         <p className="text-sm text-gray-600">{request.selectedPlan}</p>
+                        {request.accessExpiryDate && (
+                          <p className="text-xs text-gray-500">
+                            Expires: {new Date(request.accessExpiryDate).toLocaleDateString()}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="flex items-center gap-2">
                       <Badge className={getStatusColor(request.status)}>
                         {request.status}
                       </Badge>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(request.submittedAt).toLocaleDateString()}
-                      </p>
+                      {request.status === 'approved' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleBlock(request.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Ban className="w-4 h-4 mr-1" />
+                          Block
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -226,6 +288,48 @@ export const SubscriptionRequests: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Approval Modal */}
+      <Dialog open={isApprovalModalOpen} onOpenChange={setIsApprovalModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve User Access - {selectedRequest?.name}</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Set Password</label>
+              <Input
+                type="password"
+                placeholder="Enter user password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium mb-2 block">Access Duration (Months)</label>
+              <Input
+                type="number"
+                min="1"
+                max="12"
+                value={accessMonths}
+                onChange={(e) => setAccessMonths(parseInt(e.target.value) || 1)}
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <Button onClick={handleApprovalConfirm} className="bg-green-600 hover:bg-green-700">
+                <Shield className="w-4 h-4 mr-1" />
+                Grant Access
+              </Button>
+              <Button variant="outline" onClick={() => setIsApprovalModalOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Detail Modal */}
       <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>

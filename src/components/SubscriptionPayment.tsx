@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Star, Zap } from 'lucide-react';
+import { Check, Crown, Star, Zap, LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { SubscriptionFlow } from '@/components/SubscriptionFlow';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useNavigate } from 'react-router-dom';
 
 interface Plan {
   id: string;
@@ -30,6 +31,7 @@ export const SubscriptionPayment: React.FC = () => {
   const { toast } = useToast();
   const { language } = useLanguage();
   const { settings } = useAdmin();
+  const navigate = useNavigate();
 
   const plans: Plan[] = [
     {
@@ -193,13 +195,24 @@ export const SubscriptionPayment: React.FC = () => {
         ))}
       </div>
       
-      <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>
+      <div className="text-center space-y-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {language === 'ar' 
             ? 'جميع الباقات تشمل ضمان الجودة والمتابعة الكاملة' 
             : 'All packages include quality guarantee and full follow-up'
           }
         </p>
+        
+        <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/members')}
+            className="bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700"
+          >
+            <LogIn className="w-4 h-4 mr-2" />
+            {language === 'ar' ? 'هل أنت مشترك بالفعل؟' : 'Are you subscribed already?'}
+          </Button>
+        </div>
       </div>
     </div>
   );
