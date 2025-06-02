@@ -40,20 +40,24 @@ export const SectionCustomizer: React.FC<SectionCustomizerProps> = ({
   const handleContentUpdate = (field: string, value: string, lang: 'ar' | 'en' = 'en') => {
     if (field.includes('.')) {
       const [section, subField] = field.split('.');
+      const currentSection = settings[section as keyof typeof settings] as any;
+      const currentSubField = currentSection?.[subField];
+      
       updateSettings({
         [section]: {
-          ...settings[section as keyof typeof settings],
-          [subField]: typeof settings[section as keyof typeof settings]?.[subField as any] === 'object'
-            ? { ...settings[section as keyof typeof settings]?.[subField as any], [lang]: value }
+          ...(currentSection || {}),
+          [subField]: typeof currentSubField === 'object' && currentSubField !== null
+            ? { ...currentSubField, [lang]: value }
             : value
         }
       });
     } else {
+      const currentField = settings.content[field as keyof typeof settings.content] as any;
       updateSettings({
         content: {
           ...settings.content,
-          [field]: typeof settings.content[field as keyof typeof settings.content] === 'object'
-            ? { ...settings.content[field as keyof typeof settings.content], [lang]: value }
+          [field]: typeof currentField === 'object' && currentField !== null
+            ? { ...currentField, [lang]: value }
             : value
         }
       });

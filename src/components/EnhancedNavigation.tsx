@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,12 +10,16 @@ import { subscriptionStorage } from '@/utils/subscriptionStorage';
 
 export const EnhancedNavigation: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { language, toggleLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const { settings } = useAdmin();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMemberLoggedIn, setIsMemberLoggedIn] = useState(false);
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
+  };
 
   // Check if user is logged into members area
   useEffect(() => {
