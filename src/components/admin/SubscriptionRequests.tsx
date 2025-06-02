@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,43 +21,33 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-
-interface SubscriptionRequest {
-  id: string;
-  email: string;
-  name: string;
-  phone: string;
-  selectedPlan: string;
-  goals: string;
-  paymentScreenshot: string;
-  status: 'pending' | 'approved' | 'rejected';
-  submittedAt: string;
-  planPrice: string;
-}
+import { subscriptionStorage, SubscriptionRequest } from '@/utils/subscriptionStorage';
 
 export const SubscriptionRequests: React.FC = () => {
-  // Start with empty array - no placeholder data
   const [requests, setRequests] = useState<SubscriptionRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<SubscriptionRequest | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const { toast } = useToast();
 
+  // Load requests on component mount
+  useEffect(() => {
+    setRequests(subscriptionStorage.getAllRequests());
+  }, []);
+
   const handleApprove = (requestId: string) => {
-    setRequests(prev => prev.map(req => 
-      req.id === requestId ? { ...req, status: 'approved' as const } : req
-    ));
+    subscriptionStorage.updateRequestStatus(requestId, 'approved');
+    setRequests(subscriptionStorage.getAllRequests());
     
     toast({
       title: "Application Approved",
-      description: "The client will receive their access link via email.",
+      description: "The client now has access to the member area.",
       variant: "default"
     });
   };
 
   const handleReject = (requestId: string) => {
-    setRequests(prev => prev.map(req => 
-      req.id === requestId ? { ...req, status: 'rejected' as const } : req
-    ));
+    subscriptionStorage.updateRequestStatus(requestId, 'rejected');
+    setRequests(subscriptionStorage.getAllRequests());
     
     toast({
       title: "Application Rejected",

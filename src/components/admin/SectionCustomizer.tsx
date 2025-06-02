@@ -3,29 +3,23 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Save, 
-  Eye, 
-  EyeOff, 
   Settings, 
   Palette, 
-  Type, 
-  Image as ImageIcon,
-  Plus,
-  X,
-  Move,
-  Copy,
-  MessageSquare,
-  CreditCard
+  Layout, 
+  Sparkles,
+  ChevronDown,
+  ChevronRight,
+  Type,
+  Image,
+  Star
 } from 'lucide-react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { useToast } from '@/hooks/use-toast';
-import { ImageUpload } from './ImageUpload';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SectionCustomizerProps {
   sectionId: string;
@@ -38,481 +32,404 @@ export const SectionCustomizer: React.FC<SectionCustomizerProps> = ({
   sectionName,
   sectionType
 }) => {
-  const { settings, updateSettings } = useAdmin();
-  const { toast } = useToast();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [tempSettings, setTempSettings] = useState(settings);
+  const [activeTab, setActiveTab] = useState('content');
+  const { settings, updateSettings } = useAdmin();
+  const { language } = useLanguage();
 
-  const saveSection = () => {
-    updateSettings(tempSettings);
-    toast({
-      title: "Section Updated",
-      description: `${sectionName} has been updated successfully.`
-    });
-  };
-
-  const renderHeroCustomizer = () => (
-    <div className="space-y-6">
-      <Tabs defaultValue="content" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="styling">Styling</TabsTrigger>
-          <TabsTrigger value="layout">Layout</TabsTrigger>
-          <TabsTrigger value="effects">Effects</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="content" className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Title (Arabic)</label>
-              <Input
-                value={tempSettings.content.heroTitle.ar}
-                onChange={(e) => setTempSettings(prev => ({
-                  ...prev,
-                  content: { 
-                    ...prev.content, 
-                    heroTitle: { ...prev.content.heroTitle, ar: e.target.value }
-                  }
-                }))}
-                dir="rtl"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Title (English)</label>
-              <Input
-                value={tempSettings.content.heroTitle.en}
-                onChange={(e) => setTempSettings(prev => ({
-                  ...prev,
-                  content: { 
-                    ...prev.content, 
-                    heroTitle: { ...prev.content.heroTitle, en: e.target.value }
-                  }
-                }))}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Subtitle (Arabic)</label>
-              <Textarea
-                value={tempSettings.content.heroSubtitle.ar}
-                onChange={(e) => setTempSettings(prev => ({
-                  ...prev,
-                  content: { 
-                    ...prev.content, 
-                    heroSubtitle: { ...prev.content.heroSubtitle, ar: e.target.value }
-                  }
-                }))}
-                rows={3}
-                dir="rtl"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Subtitle (English)</label>
-              <Textarea
-                value={tempSettings.content.heroSubtitle.en}
-                onChange={(e) => setTempSettings(prev => ({
-                  ...prev,
-                  content: { 
-                    ...prev.content, 
-                    heroSubtitle: { ...prev.content.heroSubtitle, en: e.target.value }
-                  }
-                }))}
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <ImageUpload
-            currentImage={tempSettings.heroImage}
-            onImageChange={(imageUrl) => setTempSettings(prev => ({
-              ...prev,
-              heroImage: imageUrl
-            }))}
-            label="Hero Background Image"
-          />
-        </TabsContent>
-
-        <TabsContent value="styling" className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Text Color</label>
-              <Input type="color" defaultValue="#ffffff" />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Background Overlay</label>
-              <Select defaultValue="gradient">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="solid">Solid Color</SelectItem>
-                  <SelectItem value="gradient">Gradient</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Font Size</label>
-              <Select defaultValue="large">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="small">Small</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="large">Large</SelectItem>
-                  <SelectItem value="xl">Extra Large</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="layout" className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Content Alignment</label>
-              <Select defaultValue="center">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="left">Left</SelectItem>
-                  <SelectItem value="center">Center</SelectItem>
-                  <SelectItem value="right">Right</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Section Height</label>
-              <Select defaultValue="full">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="auto">Auto</SelectItem>
-                  <SelectItem value="half">Half Screen</SelectItem>
-                  <SelectItem value="full">Full Screen</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="effects" className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Parallax Effect</label>
-              <Switch />
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Typing Animation</label>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Fade In Animation</label>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Particles Background</label>
-              <Switch />
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-
-  const renderTestimonialsCustomizer = () => (
-    <div className="space-y-6">
-      <Tabs defaultValue="testimonials" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
-          <TabsTrigger value="styling">Styling</TabsTrigger>
-          <TabsTrigger value="layout">Layout</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="testimonials" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h4 className="font-medium">Manage Testimonials</h4>
-            <Button size="sm">
-              <Plus className="w-4 h-4 mr-1" />
-              Add Testimonial
-            </Button>
-          </div>
-          
-          {tempSettings.testimonials.map((testimonial, index) => (
-            <Card key={index} className="p-4">
-              <div className="flex justify-between items-start mb-3">
-                <Badge variant="secondary">Testimonial {index + 1}</Badge>
-                <Button variant="ghost" size="sm">
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  placeholder="Customer Name"
-                  value={testimonial.name}
-                  onChange={(e) => {
-                    const newTestimonials = [...tempSettings.testimonials];
-                    newTestimonials[index] = { ...testimonial, name: e.target.value };
-                    setTempSettings(prev => ({ ...prev, testimonials: newTestimonials }));
-                  }}
-                />
-                <Select 
-                  value={testimonial.rating.toString()}
-                  onValueChange={(value) => {
-                    const newTestimonials = [...tempSettings.testimonials];
-                    newTestimonials[index] = { ...testimonial, rating: parseInt(value) };
-                    setTempSettings(prev => ({ ...prev, testimonials: newTestimonials }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5].map(rating => (
-                      <SelectItem key={rating} value={rating.toString()}>
-                        {rating} Star{rating !== 1 ? 's' : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Textarea
-                className="mt-3"
-                placeholder="Testimonial content"
-                value={typeof testimonial.content === 'string' ? testimonial.content : testimonial.content.en}
-                onChange={(e) => {
-                  const newTestimonials = [...tempSettings.testimonials];
-                  newTestimonials[index] = { ...testimonial, content: e.target.value };
-                  setTempSettings(prev => ({ ...prev, testimonials: newTestimonials }));
-                }}
-                rows={3}
-              />
-            </Card>
-          ))}
-        </TabsContent>
-
-        <TabsContent value="styling" className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Card Style</label>
-              <Select defaultValue="modern">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="classic">Classic</SelectItem>
-                  <SelectItem value="modern">Modern</SelectItem>
-                  <SelectItem value="minimal">Minimal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Auto-play Speed</label>
-              <Select defaultValue="5000">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="3000">3 seconds</SelectItem>
-                  <SelectItem value="5000">5 seconds</SelectItem>
-                  <SelectItem value="7000">7 seconds</SelectItem>
-                  <SelectItem value="0">Manual only</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="layout" className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Show Navigation Dots</label>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Show Arrow Controls</label>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Show Customer Photos</label>
-              <Switch defaultChecked />
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-
-  const renderPackagesCustomizer = () => (
-    <div className="space-y-6">
-      <Tabs defaultValue="packages" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="packages">Packages</TabsTrigger>
-          <TabsTrigger value="pricing">Pricing</TabsTrigger>
-          <TabsTrigger value="features">Features</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="packages" className="space-y-4">
-          {['basic', 'professional', 'premium'].map(packageType => (
-            <Card key={packageType} className="p-4">
-              <div className="flex justify-between items-center mb-4">
-                <h4 className="font-medium capitalize">{packageType} Package</h4>
-                <Badge variant={packageType === 'professional' ? 'default' : 'secondary'}>
-                  {packageType === 'professional' ? 'Most Popular' : 'Standard'}
-                </Badge>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Package Name</label>
-                  <Input
-                    value={tempSettings.packages[packageType as keyof typeof tempSettings.packages]?.name || ''}
-                    placeholder={`${packageType} Package`}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Price</label>
-                  <Input
-                    value={tempSettings.packages[packageType as keyof typeof tempSettings.packages]?.price || ''}
-                    onChange={(e) => setTempSettings(prev => ({
-                      ...prev,
-                      packages: {
-                        ...prev.packages,
-                        [packageType]: { 
-                          ...prev.packages[packageType as keyof typeof prev.packages], 
-                          price: e.target.value 
-                        }
-                      }
-                    }))}
-                    placeholder="$0"
-                  />
-                </div>
-              </div>
-              
-              <div className="mt-4">
-                <label className="text-sm font-medium mb-2 block">Description</label>
-                <Textarea placeholder="Package description..." rows={2} />
-              </div>
-            </Card>
-          ))}
-        </TabsContent>
-
-        <TabsContent value="pricing" className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Show Currency Symbol</label>
-              <Switch defaultChecked />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Currency</label>
-              <Select defaultValue="USD">
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">$ USD</SelectItem>
-                  <SelectItem value="EUR">€ EUR</SelectItem>
-                  <SelectItem value="SAR">﷼ SAR</SelectItem>
-                  <SelectItem value="AED">د.إ AED</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Show Discount Badge</label>
-              <Switch />
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="features" className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Show Feature Checkmarks</label>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Feature Comparison Table</label>
-              <Switch />
-            </div>
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">Highlight Popular Package</label>
-              <Switch defaultChecked />
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-
-  const renderSectionCustomizer = () => {
-    switch (sectionType) {
-      case 'hero':
-        return renderHeroCustomizer();
-      case 'testimonials':
-        return renderTestimonialsCustomizer();
-      case 'packages':
-        return renderPackagesCustomizer();
-      default:
-        return (
-          <div className="text-center py-8 text-gray-500">
-            <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>Customization options for {sectionName} coming soon...</p>
-          </div>
-        );
+  const handleContentUpdate = (field: string, value: string, lang: 'ar' | 'en' = 'en') => {
+    if (field.includes('.')) {
+      const [section, subField] = field.split('.');
+      updateSettings({
+        [section]: {
+          ...settings[section as keyof typeof settings],
+          [subField]: typeof settings[section as keyof typeof settings]?.[subField as any] === 'object'
+            ? { ...settings[section as keyof typeof settings]?.[subField as any], [lang]: value }
+            : value
+        }
+      });
+    } else {
+      updateSettings({
+        content: {
+          ...settings.content,
+          [field]: typeof settings.content[field as keyof typeof settings.content] === 'object'
+            ? { ...settings.content[field as keyof typeof settings.content], [lang]: value }
+            : value
+        }
+      });
     }
   };
 
+  const renderHeroCustomizer = () => (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="grid w-full grid-cols-4">
+        <TabsTrigger value="content">Content</TabsTrigger>
+        <TabsTrigger value="styling">Styling</TabsTrigger>
+        <TabsTrigger value="layout">Layout</TabsTrigger>
+        <TabsTrigger value="effects">Effects</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="content" className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Hero Title (English)</Label>
+            <Textarea
+              value={settings.content.heroTitle.en}
+              onChange={(e) => handleContentUpdate('heroTitle', e.target.value, 'en')}
+              rows={2}
+            />
+          </div>
+          <div>
+            <Label>Hero Title (Arabic)</Label>
+            <Textarea
+              value={settings.content.heroTitle.ar}
+              onChange={(e) => handleContentUpdate('heroTitle', e.target.value, 'ar')}
+              rows={2}
+            />
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Subtitle (English)</Label>
+            <Textarea
+              value={settings.content.heroSubtitle.en}
+              onChange={(e) => handleContentUpdate('heroSubtitle', e.target.value, 'en')}
+              rows={3}
+            />
+          </div>
+          <div>
+            <Label>Subtitle (Arabic)</Label>
+            <Textarea
+              value={settings.content.heroSubtitle.ar}
+              onChange={(e) => handleContentUpdate('heroSubtitle', e.target.value, 'ar')}
+              rows={3}
+            />
+          </div>
+        </div>
+        
+        <div>
+          <Label>Hero Image URL</Label>
+          <Input
+            value={settings.heroImage}
+            onChange={(e) => updateSettings({ heroImage: e.target.value })}
+            placeholder="Enter image URL"
+          />
+        </div>
+      </TabsContent>
+
+      <TabsContent value="styling" className="space-y-4">
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <Label>Text Color</Label>
+            <Input type="color" defaultValue="#1f2937" />
+          </div>
+          <div>
+            <Label>Background Color</Label>
+            <Input type="color" defaultValue="#ffffff" />
+          </div>
+          <div>
+            <Label>Button Color</Label>
+            <Input type="color" defaultValue="#10b981" />
+          </div>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="layout" className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Text Alignment</Label>
+            <select className="w-full p-2 border rounded">
+              <option>Center</option>
+              <option>Left</option>
+              <option>Right</option>
+            </select>
+          </div>
+          <div>
+            <Label>Image Position</Label>
+            <select className="w-full p-2 border rounded">
+              <option>Right</option>
+              <option>Left</option>
+              <option>Background</option>
+            </select>
+          </div>
+        </div>
+      </TabsContent>
+
+      <TabsContent value="effects" className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Animation Type</Label>
+            <select className="w-full p-2 border rounded">
+              <option>Fade Up</option>
+              <option>Slide In</option>
+              <option>Zoom In</option>
+            </select>
+          </div>
+          <div>
+            <Label>Animation Delay (ms)</Label>
+            <Input type="number" defaultValue="0" min="0" step="100" />
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
+  );
+
+  const renderPackagesCustomizer = () => (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="content">Content</TabsTrigger>
+        <TabsTrigger value="pricing">Pricing</TabsTrigger>
+        <TabsTrigger value="styling">Styling</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="content" className="space-y-4">
+        <div className="space-y-6">
+          {(['basic', 'professional', 'premium'] as const).map((packageType) => (
+            <Card key={packageType}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="w-4 h-4" />
+                  {settings.packages[packageType].name.en} Package
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Name (English)</Label>
+                    <Input
+                      value={settings.packages[packageType].name.en}
+                      onChange={(e) => {
+                        updateSettings({
+                          packages: {
+                            ...settings.packages,
+                            [packageType]: {
+                              ...settings.packages[packageType],
+                              name: { ...settings.packages[packageType].name, en: e.target.value }
+                            }
+                          }
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Label>Name (Arabic)</Label>
+                    <Input
+                      value={settings.packages[packageType].name.ar}
+                      onChange={(e) => {
+                        updateSettings({
+                          packages: {
+                            ...settings.packages,
+                            [packageType]: {
+                              ...settings.packages[packageType],
+                              name: { ...settings.packages[packageType].name, ar: e.target.value }
+                            }
+                          }
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="pricing" className="space-y-4">
+        <div className="space-y-4">
+          {(['basic', 'professional', 'premium'] as const).map((packageType) => (
+            <div key={packageType} className="flex items-center gap-4 p-4 border rounded">
+              <Label className="w-20">{settings.packages[packageType].name.en}</Label>
+              <Input
+                type="number"
+                value={settings.packages[packageType].price}
+                onChange={(e) => {
+                  updateSettings({
+                    packages: {
+                      ...settings.packages,
+                      [packageType]: {
+                        ...settings.packages[packageType],
+                        price: e.target.value
+                      }
+                    }
+                  });
+                }}
+                className="w-32"
+              />
+              <span className="text-gray-500">EGP</span>
+            </div>
+          ))}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="styling" className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Card Border Radius</Label>
+            <Input type="range" min="0" max="20" defaultValue="8" />
+          </div>
+          <div>
+            <Label>Popular Badge Color</Label>
+            <Input type="color" defaultValue="#3b82f6" />
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
+  );
+
+  const renderTestimonialsCustomizer = () => (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="content">Content</TabsTrigger>
+        <TabsTrigger value="styling">Styling</TabsTrigger>
+      </TabsList>
+      
+      <TabsContent value="content" className="space-y-4">
+        <div className="space-y-6">
+          {settings.testimonials.map((testimonial, index) => (
+            <Card key={index}>
+              <CardHeader>
+                <CardTitle>Testimonial {index + 1}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Client Name</Label>
+                  <Input
+                    value={testimonial.name}
+                    onChange={(e) => {
+                      const updatedTestimonials = [...settings.testimonials];
+                      updatedTestimonials[index] = { ...testimonial, name: e.target.value };
+                      updateSettings({ testimonials: updatedTestimonials });
+                    }}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Content (English)</Label>
+                    <Textarea
+                      value={testimonial.content.en}
+                      onChange={(e) => {
+                        const updatedTestimonials = [...settings.testimonials];
+                        updatedTestimonials[index] = {
+                          ...testimonial,
+                          content: { ...testimonial.content, en: e.target.value }
+                        };
+                        updateSettings({ testimonials: updatedTestimonials });
+                      }}
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <Label>Content (Arabic)</Label>
+                    <Textarea
+                      value={testimonial.content.ar}
+                      onChange={(e) => {
+                        const updatedTestimonials = [...settings.testimonials];
+                        updatedTestimonials[index] = {
+                          ...testimonial,
+                          content: { ...testimonial.content, ar: e.target.value }
+                        };
+                        updateSettings({ testimonials: updatedTestimonials });
+                      }}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Rating</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={testimonial.rating}
+                    onChange={(e) => {
+                      const updatedTestimonials = [...settings.testimonials];
+                      updatedTestimonials[index] = { ...testimonial, rating: parseInt(e.target.value) };
+                      updateSettings({ testimonials: updatedTestimonials });
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="styling" className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Card Background</Label>
+            <Input type="color" defaultValue="#ffffff" />
+          </div>
+          <div>
+            <Label>Star Color</Label>
+            <Input type="color" defaultValue="#fbbf24" />
+          </div>
+        </div>
+      </TabsContent>
+    </Tabs>
+  );
+
+  const renderDefaultCustomizer = () => (
+    <div className="p-4 text-center text-gray-500">
+      <Settings className="w-8 h-8 mx-auto mb-2" />
+      <p>Customization options for {sectionName} coming soon...</p>
+    </div>
+  );
+
+  const renderCustomizer = () => {
+    switch (sectionType) {
+      case 'hero':
+        return renderHeroCustomizer();
+      case 'packages':
+        return renderPackagesCustomizer();
+      case 'testimonials':
+        return renderTestimonialsCustomizer();
+      default:
+        return renderDefaultCustomizer();
+    }
+  };
+
+  if (!isExpanded) {
+    return (
+      <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setIsExpanded(true)}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <Settings className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <h3 className="font-medium">{sectionName}</h3>
+                <p className="text-sm text-gray-500">Click to customize</p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="mb-6">
+    <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CardTitle className="flex items-center gap-2">
-              {sectionType === 'hero' && <Type className="w-5 h-5" />}
-              {sectionType === 'testimonials' && <MessageSquare className="w-5 h-5" />}
-              {sectionType === 'packages' && <CreditCard className="w-5 h-5" />}
-              {sectionType === 'gallery' && <ImageIcon className="w-5 h-5" />}
-              <span>{sectionName}</span>
-            </CardTitle>
-            <Badge variant="outline">{sectionType}</Badge>
+            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <Settings className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <CardTitle>{sectionName} Customization</CardTitle>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Switch defaultChecked />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </Button>
-          </div>
+          <Button variant="ghost" size="sm" onClick={() => setIsExpanded(false)}>
+            <ChevronDown className="w-4 h-4" />
+          </Button>
         </div>
       </CardHeader>
-
-      {isExpanded && (
-        <CardContent>
-          {renderSectionCustomizer()}
-          
-          <div className="flex justify-end gap-2 pt-6 border-t">
-            <Button variant="outline" size="sm">
-              <Copy className="w-4 h-4 mr-2" />
-              Duplicate Section
-            </Button>
-            <Button onClick={saveSection} size="sm">
-              <Save className="w-4 h-4 mr-2" />
-              Save Changes
-            </Button>
-          </div>
-        </CardContent>
-      )}
+      <CardContent>
+        {renderCustomizer()}
+      </CardContent>
     </Card>
   );
 };

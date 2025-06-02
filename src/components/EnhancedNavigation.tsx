@@ -1,222 +1,144 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Globe, Settings, ChevronDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Menu, X, Globe, Moon, Sun, Settings, Users } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAdmin } from '@/contexts/AdminContext';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { useTheme } from 'next-themes';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { subscriptionStorage } from '@/utils/subscriptionStorage';
 
 export const EnhancedNavigation: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { language, setLanguage } = useLanguage();
-  const { settings, toggleAdminMode, isAdminMode } = useAdmin();
+  const { language, toggleLanguage } = useLanguage();
+  const { settings } = useAdmin();
+  const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isMemberLoggedIn, setIsMemberLoggedIn] = useState(false);
 
+  // Check if user is logged into members area
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const memberAuth = localStorage.getItem('memberAuth');
+    setIsMemberLoggedIn(!!memberAuth);
   }, []);
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'ar' ? 'en' : 'ar');
-  };
+  const navigationItems = [
+    { id: 'home', label: language === 'ar' ? settings.sectionTitles.home.ar : settings.sectionTitles.home.en, href: '/#home' },
+    { id: 'about', label: language === 'ar' ? settings.sectionTitles.about.ar : settings.sectionTitles.about.en, href: '/#about' },
+    { id: 'packages', label: language === 'ar' ? settings.sectionTitles.packages.ar : settings.sectionTitles.packages.en, href: '/#packages' },
+    { id: 'contact', label: language === 'ar' ? settings.sectionTitles.contact.ar : settings.sectionTitles.contact.en, href: '/#contact' },
+  ];
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const handleScroll = (elementId: string) => {
+    // If we're not on the home page, navigate there first
+    if (location.pathname !== '/') {
+      navigate('/', { replace: true });
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(elementId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
     setIsMenuOpen(false);
   };
 
-  const getLocalizedText = (text: string | { ar: string; en: string }): string => {
-    if (typeof text === 'string') return text;
-    return language === 'ar' ? text.ar : text.en;
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
   };
 
-  // Convert packages object to array for mapping
-  const packagesArray = [
-    { id: 'basic', ...settings.packages.basic },
-    { id: 'professional', ...settings.packages.professional },
-    { id: 'premium', ...settings.packages.premium }
-  ];
-
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg' 
-        : 'bg-transparent'
-    }`}>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => handleNavigation('/')}>
             <img 
               src={settings.content.logo} 
               alt="Logo" 
-              className="h-10 w-10 object-contain"
+              className="h-10 w-10 rounded-lg object-cover"
             />
-            <span className={`font-bold text-xl ${
-              isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'
-            }`}>
-              {getLocalizedText(settings.content.companyName)}
+            <span className="font-bold text-xl text-gray-800 dark:text-white">
+              {language === 'ar' ? settings.content.companyName.ar : settings.content.companyName.en}
             </span>
           </div>
 
           {/* Desktop Navigation */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className={`${
-                  isScrolled 
-                    ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
-                    : 'text-white hover:text-emerald-200'
-                }`}>
-                  {getLocalizedText(settings.sectionTitles.home)}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                    <li className="row-span-3">
-                      <NavigationMenuLink asChild>
-                        <button
-                          onClick={() => scrollToSection('hero')}
-                          className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                        >
-                          <div className="mb-2 mt-4 text-lg font-medium">
-                            Welcome
-                          </div>
-                          <p className="text-sm leading-tight text-muted-foreground">
-                            Start your fitness transformation journey
-                          </p>
-                        </button>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <button
-                          onClick={() => scrollToSection('gallery')}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        >
-                          <div className="text-sm font-medium leading-none">Gallery</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            View training photos and results
-                          </p>
-                        </button>
-                      </NavigationMenuLink>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <button
-                  onClick={() => scrollToSection('about')}
-                  className={`px-4 py-2 font-medium transition-colors ${
-                    isScrolled 
-                      ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
-                      : 'text-white hover:text-emerald-200'
-                  }`}
-                >
-                  {getLocalizedText(settings.sectionTitles.about)}
-                </button>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className={`${
-                  isScrolled 
-                    ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
-                    : 'text-white hover:text-emerald-200'
-                }`}>
-                  {getLocalizedText(settings.sectionTitles.packages)}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {packagesArray.map((pkg, index) => (
-                      <li key={index}>
-                        <NavigationMenuLink asChild>
-                          <button
-                            onClick={() => scrollToSection('packages')}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">
-                              {getLocalizedText(pkg.name)}
-                            </div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              {getLocalizedText(pkg.description)}
-                            </p>
-                          </button>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <button
-                  onClick={() => scrollToSection('contact')}
-                  className={`px-4 py-2 font-medium transition-colors ${
-                    isScrolled 
-                      ? 'text-gray-900 dark:text-white hover:text-emerald-600' 
-                      : 'text-white hover:text-emerald-200'
-                  }`}
-                >
-                  {getLocalizedText(settings.sectionTitles.contact)}
-                </button>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+          <div className="hidden lg:flex items-center space-x-8">
+            {navigationItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleScroll(item.id)}
+                className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
+              >
+                {item.label}
+              </button>
+            ))}
+            
+            {/* Members Link */}
+            <button
+              onClick={() => handleNavigation('/members')}
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
+            >
+              <Users className="w-4 h-4" />
+              {language === 'ar' ? 'منطقة الأعضاء' : 'Members'}
+              {isMemberLoggedIn && (
+                <Badge className="bg-emerald-100 text-emerald-800 text-xs">
+                  {language === 'ar' ? 'متصل' : 'Active'}
+                </Badge>
+              )}
+            </button>
+          </div>
 
           {/* Controls */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-4">
+            {/* Language Toggle */}
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              className={`${
-                isScrolled 
-                  ? 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
-                  : 'text-white hover:bg-white/20'
-              }`}
+              className="hidden sm:flex"
             >
               <Globe className="w-4 h-4 mr-1" />
-              {language === 'ar' ? 'EN' : 'ع'}
+              {language === 'ar' ? 'EN' : 'AR'}
             </Button>
 
+            {/* Theme Toggle */}
             <Button
               variant="ghost"
               size="sm"
-              onClick={toggleAdminMode}
-              className={`${
-                isScrolled 
-                  ? 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
-                  : 'text-white hover:bg-white/20'
-              } ${isAdminMode ? 'bg-emerald-100 dark:bg-emerald-900' : ''}`}
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="hidden sm:flex"
             >
-              <Settings className="w-4 h-4 mr-1" />
-              {getLocalizedText(settings.buttons.admin)}
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
 
-            {/* Mobile Menu Button */}
+            {/* Admin Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleNavigation('/admin')}
+              className="hidden sm:flex bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50"
+            >
+              <Settings className="w-4 h-4 mr-1" />
+              {language === 'ar' ? settings.buttons.admin.ar : settings.buttons.admin.en}
+            </Button>
+
+            {/* Mobile menu button */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`md:hidden ${
-                isScrolled 
-                  ? 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800' 
-                  : 'text-white hover:bg-white/20'
-              }`}
+              className="lg:hidden"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
@@ -225,36 +147,64 @@ export const EnhancedNavigation: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <nav className="py-4 space-y-2">
+          <div className="lg:hidden py-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col space-y-3">
+              {navigationItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleScroll(item.id)}
+                  className="text-left text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium py-2"
+                >
+                  {item.label}
+                </button>
+              ))}
+              
+              {/* Mobile Members Link */}
               <button
-                onClick={() => scrollToSection('hero')}
-                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                onClick={() => handleNavigation('/members')}
+                className="flex items-center gap-2 text-left text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium py-2"
               >
-                {getLocalizedText(settings.sectionTitles.home)}
+                <Users className="w-4 h-4" />
+                {language === 'ar' ? 'منطقة الأعضاء' : 'Members'}
+                {isMemberLoggedIn && (
+                  <Badge className="bg-emerald-100 text-emerald-800 text-xs">
+                    {language === 'ar' ? 'متصل' : 'Active'}
+                  </Badge>
+                )}
               </button>
-              <button
-                onClick={() => scrollToSection('about')}
-                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                {getLocalizedText(settings.sectionTitles.about)}
-              </button>
-              <button
-                onClick={() => scrollToSection('packages')}
-                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                {getLocalizedText(settings.sectionTitles.packages)}
-              </button>
-              <button
-                onClick={() => scrollToSection('contact')}
-                className="block w-full text-left px-4 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                {getLocalizedText(settings.sectionTitles.contact)}
-              </button>
-            </nav>
+              
+              <div className="flex items-center space-x-2 pt-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleLanguage}
+                >
+                  <Globe className="w-4 h-4 mr-1" />
+                  {language === 'ar' ? 'EN' : 'AR'}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                >
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleNavigation('/admin')}
+                  className="bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300"
+                >
+                  <Settings className="w-4 h-4 mr-1" />
+                  {language === 'ar' ? settings.buttons.admin.ar : settings.buttons.admin.en}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>
-    </header>
+    </nav>
   );
 };
