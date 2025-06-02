@@ -386,7 +386,7 @@ export const SubscriptionRequests: React.FC = () => {
                 <div className="flex gap-2">
                   <Button
                     onClick={() => {
-                      handleApprove(selectedRequest.id);
+                      handleApprove(selectedRequest);
                       setIsDetailModalOpen(false);
                     }}
                     className="bg-green-600 hover:bg-green-700"
