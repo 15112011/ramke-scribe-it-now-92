@@ -16,11 +16,13 @@ import {
   Layout,
   Palette,
   Globe,
-  Smartphone
+  Smartphone,
+  FileText
 } from 'lucide-react';
 import { MultilingualEditor } from './MultilingualEditor';
 import { SubscriptionRequests } from './SubscriptionRequests';
 import { SectionCustomizer } from './SectionCustomizer';
+import { ResourceManager } from './ResourceManager';
 import { useSections } from '@/contexts/SectionsContext';
 
 export const ComprehensiveAdmin: React.FC = () => {
@@ -53,7 +55,7 @@ export const ComprehensiveAdmin: React.FC = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
           <TabsTrigger value="sections" className="flex items-center gap-2">
             <Layers className="w-4 h-4" />
             <span className="hidden sm:inline">Sections</span>
@@ -61,6 +63,10 @@ export const ComprehensiveAdmin: React.FC = () => {
           <TabsTrigger value="content" className="flex items-center gap-2">
             <Languages className="w-4 h-4" />
             <span className="hidden sm:inline">Content</span>
+          </TabsTrigger>
+          <TabsTrigger value="resources" className="flex items-center gap-2">
+            <FileText className="w-4 h-4" />
+            <span className="hidden sm:inline">Resources</span>
           </TabsTrigger>
           <TabsTrigger value="design" className="flex items-center gap-2">
             <Palette className="w-4 h-4" />
@@ -146,6 +152,10 @@ export const ComprehensiveAdmin: React.FC = () => {
 
         <TabsContent value="content" className="mt-6">
           <MultilingualEditor />
+        </TabsContent>
+
+        <TabsContent value="resources" className="mt-6">
+          <ResourceManager />
         </TabsContent>
 
         <TabsContent value="design" className="mt-6">

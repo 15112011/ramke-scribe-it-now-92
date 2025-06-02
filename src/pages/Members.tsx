@@ -8,7 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { subscriptionStorage } from '@/utils/subscriptionStorage';
+import { 
+  subscriptionStorage, 
+  TrainingResource, 
+  VideoResource, 
+  DailyUsage 
+} from '@/utils/subscriptionStorage';
 import { 
   Lock, 
   Download, 
@@ -19,7 +24,9 @@ import {
   CheckCircle,
   Clock,
   Dumbbell,
-  Apple
+  Apple,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 
 const Members: React.FC = () => {
@@ -27,6 +34,14 @@ const Members: React.FC = () => {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [userPlan, setUserPlan] = useState('');
+  const [trainingResources, setTrainingResources] = useState<TrainingResource[]>([]);
+  const [videoResources, setVideoResources] = useState<VideoResource[]>([]);
+  const [dailyUsage, setDailyUsage] = useState<DailyUsage>({
+    email: '',
+    date: '',
+    trainingsAccessed: 0,
+    videosAccessed: 0
+  });
   const { language } = useLanguage();
   const { toast } = useToast();
 
@@ -38,8 +53,15 @@ const Members: React.FC = () => {
       setIsAuthorized(true);
       setEmail(authData.email);
       setUserPlan(authData.plan);
+      loadUserData(authData.email);
     }
   }, []);
+
+  const loadUserData = (userEmail: string) => {
+    setTrainingResources(subscriptionStorage.getTrainingResources().filter(r => r.enabled));
+    setVideoResources(subscriptionStorage.getVideoResources().filter(v => v.enabled));
+    setDailyUsage(subscriptionStorage.getDailyUsage(userEmail));
+  };
 
   const handleVerifyAccess = () => {
     if (!email) {
@@ -72,6 +94,8 @@ const Members: React.FC = () => {
           loginTime: new Date().toISOString()
         }));
 
+        loadUserData(email);
+
         toast({
           title: language === 'ar' ? 'مرحباً بك!' : 'Welcome!',
           description: language === 'ar' 
@@ -101,6 +125,47 @@ const Members: React.FC = () => {
       description: language === 'ar' 
         ? 'تم تسجيل خروجك بنجاح'
         : 'You have been logged out successfully',
+    });
+  };
+
+  const handleResourceAccess = (type: 'training' | 'video', url: string) => {
+    const maxTrainings = 5;
+    const maxVideos = 1;
+
+    if (type === 'training' && dailyUsage.trainingsAccessed >= maxTrainings) {
+      toast({
+        title: language === 'ar' ? 'تم الوصول للحد الأقصى' : 'Daily Limit Reached',
+        description: language === 'ar' 
+          ? `يمكنك الوصول إلى ${maxTrainings} تدريبات يومياً فقط`
+          : `You can only access ${maxTrainings} trainings per day`,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (type === 'video' && dailyUsage.videosAccessed >= maxVideos) {
+      toast({
+        title: language === 'ar' ? 'تم الوصول للحد الأقصى' : 'Daily Limit Reached',
+        description: language === 'ar' 
+          ? `يمكنك مشاهدة ${maxVideos} فيديو يومياً فقط`
+          : `You can only watch ${maxVideos} video per day`,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Update usage
+    subscriptionStorage.updateDailyUsage(email, type);
+    setDailyUsage(subscriptionStorage.getDailyUsage(email));
+
+    // Open resource
+    window.open(url, '_blank');
+
+    toast({
+      title: language === 'ar' ? 'تم فتح المورد' : 'Resource Opened',
+      description: language === 'ar' 
+        ? 'تم فتح الرابط في نافذة جديدة'
+        : 'Resource opened in new window',
     });
   };
 
@@ -151,7 +216,7 @@ const Members: React.FC = () => {
                 ) : (
                   <>
                     <Lock className="w-4 h-4 mr-2" />
-                    {language === 'ar' ? 'دخول' : 'Access'}
+                    {language === 'ar' ? 'دخول' : 'Sign In'}
                   </>
                 )}
               </Button>
@@ -199,99 +264,95 @@ const Members: React.FC = () => {
           </div>
         </div>
 
+        {/* Daily Usage Status */}
+        <div className="container mx-auto px-4 py-6">
+          <Card className="mb-6">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold mb-2">
+                    {language === 'ar' ? 'الاستخدام اليومي' : 'Daily Usage'}
+                  </h3>
+                  <div className="flex gap-4">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">
+                        {language === 'ar' ? 'التدريبات:' : 'Trainings:'} {dailyUsage.trainingsAccessed}/5
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Play className="w-4 h-4 text-red-600" />
+                      <span className="text-sm">
+                        {language === 'ar' ? 'الفيديوهات:' : 'Videos:'} {dailyUsage.videosAccessed}/1
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">
+                    {language === 'ar' ? 'يتم إعادة تعيين الحدود يومياً' : 'Limits reset daily'}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Content */}
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="container mx-auto px-4 pb-12">
+          <div className="grid md:grid-cols-2 gap-6">
             
-            {/* Training Schedules */}
+            {/* Training Resources */}
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Dumbbell className="w-5 h-5 text-emerald-600" />
-                  {language === 'ar' ? 'جداول التدريب' : 'Training Schedules'}
+                  {language === 'ar' ? 'التدريبات والأنظمة الغذائية' : 'Training & Diet Plans'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'الأسبوع 1-2' : 'Week 1-2'}</p>
-                    <p className="text-sm text-gray-600">{language === 'ar' ? 'برنامج البداية' : 'Beginner Program'}</p>
+                {trainingResources.map((resource) => (
+                  <div key={resource.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">
+                        {language === 'ar' ? resource.title.ar : resource.title.en}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        <Badge className="mr-2">
+                          {resource.type === 'training' ? 
+                            (language === 'ar' ? 'تدريب' : 'Training') : 
+                            (language === 'ar' ? 'نظام غذائي' : 'Diet')
+                          }
+                        </Badge>
+                        {language === 'ar' ? resource.description.ar : resource.description.en}
+                      </p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleResourceAccess('training', resource.pdfUrl)}
+                      disabled={dailyUsage.trainingsAccessed >= 5}
+                    >
+                      {dailyUsage.trainingsAccessed >= 5 ? (
+                        <AlertCircle className="w-4 h-4 mr-1" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-1" />
+                      )}
+                      PDF
+                    </Button>
                   </div>
-                  <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4 mr-1" />
-                    PDF
-                  </Button>
-                </div>
+                ))}
                 
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'الأسبوع 3-4' : 'Week 3-4'}</p>
-                    <p className="text-sm text-gray-600">{language === 'ar' ? 'برنامج متوسط' : 'Intermediate Program'}</p>
+                {trainingResources.length === 0 && (
+                  <div className="text-center text-gray-500 py-4">
+                    <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>{language === 'ar' ? 'لا توجد موارد متاحة' : 'No resources available'}</p>
                   </div>
-                  <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4 mr-1" />
-                    PDF
-                  </Button>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'الأسبوع 5-8' : 'Week 5-8'}</p>
-                    <p className="text-sm text-gray-600">{language === 'ar' ? 'برنامج متقدم' : 'Advanced Program'}</p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4 mr-1" />
-                    PDF
-                  </Button>
-                </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Diet Plans */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Apple className="w-5 h-5 text-emerald-600" />
-                  {language === 'ar' ? 'الأنظمة الغذائية' : 'Diet Plans'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'نظام حرق الدهون' : 'Fat Loss Diet'}</p>
-                    <p className="text-sm text-gray-600">{language === 'ar' ? '1800 سعرة حرارية' : '1800 Calories'}</p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4 mr-1" />
-                    PDF
-                  </Button>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'نظام بناء العضلات' : 'Muscle Building Diet'}</p>
-                    <p className="text-sm text-gray-600">{language === 'ar' ? '2500 سعرة حرارية' : '2500 Calories'}</p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4 mr-1" />
-                    PDF
-                  </Button>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'نظام المحافظة' : 'Maintenance Diet'}</p>
-                    <p className="text-sm text-gray-600">{language === 'ar' ? '2200 سعرة حرارية' : '2200 Calories'}</p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    <Download className="w-4 h-4 mr-1" />
-                    PDF
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Video Tutorials */}
+            {/* Video Resources */}
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -300,38 +361,38 @@ const Members: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'تقنيات التمرين الصحيحة' : 'Proper Exercise Form'}</p>
-                    <p className="text-sm text-gray-600">15 {language === 'ar' ? 'دقيقة' : 'minutes'}</p>
+                {videoResources.map((video) => (
+                  <div key={video.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">
+                        {language === 'ar' ? video.title.ar : video.title.en}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {language === 'ar' ? video.description.ar : video.description.en}
+                      </p>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleResourceAccess('video', video.videoUrl)}
+                      disabled={dailyUsage.videosAccessed >= 1}
+                    >
+                      {dailyUsage.videosAccessed >= 1 ? (
+                        <AlertCircle className="w-4 h-4 mr-1" />
+                      ) : (
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                      )}
+                      {language === 'ar' ? 'مشاهدة' : 'Watch'}
+                    </Button>
                   </div>
-                  <Button size="sm" variant="outline">
-                    <Play className="w-4 h-4 mr-1" />
-                    {language === 'ar' ? 'مشاهدة' : 'Watch'}
-                  </Button>
-                </div>
+                ))}
                 
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'تمارين الإحماء' : 'Warm-up Exercises'}</p>
-                    <p className="text-sm text-gray-600">10 {language === 'ar' ? 'دقائق' : 'minutes'}</p>
+                {videoResources.length === 0 && (
+                  <div className="text-center text-gray-500 py-4">
+                    <Play className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>{language === 'ar' ? 'لا توجد فيديوهات متاحة' : 'No videos available'}</p>
                   </div>
-                  <Button size="sm" variant="outline">
-                    <Play className="w-4 h-4 mr-1" />
-                    {language === 'ar' ? 'مشاهدة' : 'Watch'}
-                  </Button>
-                </div>
-                
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{language === 'ar' ? 'تمارين التمدد' : 'Stretching Routine'}</p>
-                    <p className="text-sm text-gray-600">12 {language === 'ar' ? 'دقيقة' : 'minutes'}</p>
-                  </div>
-                  <Button size="sm" variant="outline">
-                    <Play className="w-4 h-4 mr-1" />
-                    {language === 'ar' ? 'مشاهدة' : 'Watch'}
-                  </Button>
-                </div>
+                )}
               </CardContent>
             </Card>
 
@@ -358,37 +419,6 @@ const Members: React.FC = () => {
                   <FileText className="w-4 h-4 mr-2" />
                   {language === 'ar' ? 'تحديث التقدم' : 'Update Progress'}
                 </Button>
-              </CardContent>
-            </Card>
-
-            {/* Nutrition Tracker */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-600" />
-                  {language === 'ar' ? 'متتبع التغذية' : 'Nutrition Tracker'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-emerald-600">1,650</p>
-                  <p className="text-sm text-gray-600">{language === 'ar' ? 'سعرة حرارية اليوم' : 'calories today'}</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>{language === 'ar' ? 'البروتين' : 'Protein'}</span>
-                    <span>120g</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>{language === 'ar' ? 'الكارب' : 'Carbs'}</span>
-                    <span>180g</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>{language === 'ar' ? 'الدهون' : 'Fats'}</span>
-                    <span>55g</span>
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
