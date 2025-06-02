@@ -43,6 +43,8 @@ export const SubscriptionRequests: React.FC = () => {
 
   const handleApprove = (request: SubscriptionRequest) => {
     setSelectedRequest(request);
+    // Use existing password if user set one during subscription
+    setPassword(request.password || '');
     setIsApprovalModalOpen(true);
   };
 
@@ -204,6 +206,17 @@ export const SubscriptionRequests: React.FC = () => {
                       </div>
                     </div>
                   </div>
+
+                  {request.password && (
+                    <div className="bg-green-50 p-3 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-4 h-4 text-green-600" />
+                        <p className="text-sm text-green-800">
+                          User has set their password during subscription
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="flex items-center gap-2">
                     <Button
@@ -258,6 +271,7 @@ export const SubscriptionRequests: React.FC = () => {
                       <div>
                         <p className="font-medium">{request.name}</p>
                         <p className="text-sm text-gray-600">{request.selectedPlan}</p>
+                        <p className="text-xs text-gray-500">{request.phone}</p>
                         {request.accessExpiryDate && (
                           <p className="text-xs text-gray-500">
                             Expires: {new Date(request.accessExpiryDate).toLocaleDateString()}
@@ -298,13 +312,20 @@ export const SubscriptionRequests: React.FC = () => {
           
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Set Password</label>
+              <label className="text-sm font-medium mb-2 block">
+                {selectedRequest?.password ? 'Update Password' : 'Set Password'}
+              </label>
               <Input
                 type="password"
-                placeholder="Enter user password"
+                placeholder={selectedRequest?.password ? "Update user password" : "Enter user password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {selectedRequest?.password && (
+                <p className="text-xs text-green-600 mt-1">
+                  User already set a password during subscription. You can keep it or change it.
+                </p>
+              )}
             </div>
             
             <div>
@@ -360,6 +381,11 @@ export const SubscriptionRequests: React.FC = () => {
                       </Badge>
                     </p>
                     <p><strong>Submitted:</strong> {new Date(selectedRequest.submittedAt).toLocaleString()}</p>
+                    {selectedRequest.password && (
+                      <p><strong>Password:</strong> 
+                        <span className="ml-2 text-green-600">✓ Set by user</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

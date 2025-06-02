@@ -1,4 +1,3 @@
-
 export interface SubscriptionRequest {
   id: string;
   email: string;
@@ -67,6 +66,15 @@ export const subscriptionStorage = {
     return newRequest;
   },
 
+  // Set user password during subscription
+  setUserPassword: (id: string, password: string): void => {
+    const requests = subscriptionStorage.getAllRequests();
+    const updatedRequests = requests.map(req => 
+      req.id === id ? { ...req, password } : req
+    );
+    localStorage.setItem('subscriptionRequests', JSON.stringify(updatedRequests));
+  },
+
   // Update request status
   updateRequestStatus: (id: string, status: 'pending' | 'approved' | 'rejected' | 'blocked'): void => {
     const requests = subscriptionStorage.getAllRequests();
@@ -76,7 +84,7 @@ export const subscriptionStorage = {
     localStorage.setItem('subscriptionRequests', JSON.stringify(updatedRequests));
   },
 
-  // Set user password and access duration
+  // Set user password and access duration (for admin approval)
   setUserAccess: (id: string, password: string, durationMonths: number): void => {
     const requests = subscriptionStorage.getAllRequests();
     const expiryDate = new Date();

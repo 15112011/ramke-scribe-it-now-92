@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,8 @@ import {
   CheckCircle, 
   Clock,
   Mail,
-  AlertCircle
+  AlertCircle,
+  Lock
 } from 'lucide-react';
 import { subscriptionStorage } from '@/utils/subscriptionStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -24,6 +24,7 @@ interface SubscriptionData {
   email: string;
   name: string;
   phone: string;
+  password: string;
   paymentScreenshot: File | null;
   selectedPlan: string;
   goals: string;
@@ -47,6 +48,7 @@ export const SubscriptionFlow: React.FC<SubscriptionFlowProps> = ({
     email: '',
     name: '',
     phone: '',
+    password: '',
     paymentScreenshot: null,
     selectedPlan: selectedPlan,
     goals: ''
@@ -72,8 +74,8 @@ export const SubscriptionFlow: React.FC<SubscriptionFlowProps> = ({
       reader.onload = () => {
         screenshotData = reader.result as string;
         
-        // Save to local storage
-        subscriptionStorage.addRequest({
+        // Save to local storage with password
+        const newRequest = subscriptionStorage.addRequest({
           email: subscriptionData.email,
           name: subscriptionData.name,
           phone: subscriptionData.phone,
@@ -82,6 +84,9 @@ export const SubscriptionFlow: React.FC<SubscriptionFlowProps> = ({
           paymentScreenshot: screenshotData,
           planPrice: planPrice
         });
+        
+        // Set the password for the user
+        subscriptionStorage.setUserPassword(newRequest.id, subscriptionData.password);
         
         setCurrentStep('submitted');
         setIsLoading(false);
@@ -184,10 +189,27 @@ export const SubscriptionFlow: React.FC<SubscriptionFlowProps> = ({
               <Input
                 id="phone"
                 type="tel"
-                placeholder="+1 (555) 123-4567"
+                placeholder="+20 123 456 7890"
                 value={subscriptionData.phone}
                 onChange={(e) => setSubscriptionData(prev => ({ ...prev, phone: e.target.value }))}
               />
+            </div>
+
+            <div>
+              <Label htmlFor="password">{language === 'ar' ? 'كلمة المرور' : 'Password'}</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder={language === 'ar' ? 'اختر كلمة مرور قوية' : 'Choose a strong password'}
+                value={subscriptionData.password}
+                onChange={(e) => setSubscriptionData(prev => ({ ...prev, password: e.target.value }))}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {language === 'ar' 
+                  ? 'ستستخدم هذه كلمة المرور للدخول إلى منطقة الأعضاء'
+                  : 'You will use this password to access the members area'
+                }
+              </p>
             </div>
             
             <div>
@@ -206,7 +228,7 @@ export const SubscriptionFlow: React.FC<SubscriptionFlowProps> = ({
             
             <Button 
               onClick={() => setCurrentStep('payment')}
-              disabled={!subscriptionData.email || !subscriptionData.name || !subscriptionData.phone || !subscriptionData.goals}
+              disabled={!subscriptionData.email || !subscriptionData.name || !subscriptionData.phone || !subscriptionData.password || !subscriptionData.goals}
               className="w-full"
             >
               {language === 'ar' ? 'المتابعة للدفع' : 'Continue to Payment'}
@@ -347,6 +369,10 @@ export const SubscriptionFlow: React.FC<SubscriptionFlowProps> = ({
               <div className="flex justify-between">
                 <span className="font-medium">{language === 'ar' ? 'الهاتف:' : 'Phone:'}</span>
                 <span>{subscriptionData.phone}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">{language === 'ar' ? 'كلمة المرور:' : 'Password:'}</span>
+                <span className="text-emerald-600">✓ {language === 'ar' ? 'تم التعيين' : 'Set'}</span>
               </div>
               <div>
                 <span className="font-medium">{language === 'ar' ? 'الأهداف:' : 'Goals:'}</span>
