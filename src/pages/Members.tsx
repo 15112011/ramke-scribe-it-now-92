@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { EnhancedNavigation } from '@/components/EnhancedNavigation';
 import { Footer } from '@/components/Footer';
@@ -310,103 +309,124 @@ const Members: React.FC = () => {
       <EnhancedNavigation />
       
       <main className="pt-20">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-600 to-green-600 text-white py-12">
+        {/* Header with improved styling */}
+        <div className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-green-600 text-white py-16">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold mb-2">
+                <h1 className="text-5xl font-bold mb-4 leading-tight">
                   {language === 'ar' ? 'مرحباً بك في منطقة الأعضاء' : 'Welcome to Members Area'}
                 </h1>
-                <p className="text-emerald-100 mb-4">
-                  {language === 'ar' ? `مرحباً ${email}` : `Welcome ${email}`}
+                <p className="text-emerald-100 mb-6 text-lg">
+                  {language === 'ar' ? `أهلاً وسهلاً ${email}` : `Hello ${email}`}
                 </p>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge className="bg-white text-emerald-600">
+                <div className="flex gap-3 flex-wrap">
+                  <Badge className="bg-white text-emerald-700 hover:bg-emerald-50 px-4 py-2 text-sm font-semibold">
                     {language === 'ar' ? `باقة ${userPlan}` : `${userPlan} Plan`}
                   </Badge>
                   {userExpiry && (
-                    <Badge variant="outline" className="bg-emerald-500 text-white border-white">
+                    <Badge variant="outline" className="bg-emerald-500 text-white border-white hover:bg-emerald-400 px-4 py-2 text-sm font-semibold">
                       {language === 'ar' ? 'تنتهي في:' : 'Expires:'} {new Date(userExpiry).toLocaleDateString()}
                     </Badge>
                   )}
                 </div>
               </div>
-              <Button variant="outline" onClick={handleLogout} className="border-white text-white hover:bg-white hover:text-emerald-600">
+              <Button variant="outline" onClick={handleLogout} className="border-white text-white hover:bg-white hover:text-emerald-600 font-semibold">
                 {language === 'ar' ? 'تسجيل خروج' : 'Logout'}
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Daily Usage Status */}
-        <div className="container mx-auto px-4 py-6">
-          <Card className="mb-6">
-            <CardContent className="p-4">
+        {/* Daily Usage Status with improved styling */}
+        <div className="container mx-auto px-4 py-8">
+          <Card className="mb-8 shadow-lg border-0 bg-white dark:bg-gray-800">
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                     {language === 'ar' ? 'الاستخدام اليومي' : 'Daily Usage'}
                   </h3>
-                  <div className="flex gap-4">
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm">
-                        {language === 'ar' ? 'التدريبات:' : 'Trainings:'} {dailyUsage.trainingsAccessed}/5
-                      </span>
+                  <div className="flex gap-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm text-gray-600 dark:text-gray-400 block">
+                          {language === 'ar' ? 'التدريبات' : 'Trainings'}
+                        </span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                          {dailyUsage.trainingsAccessed}/5
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Play className="w-4 h-4 text-red-600" />
-                      <span className="text-sm">
-                        {language === 'ar' ? 'الفيديوهات:' : 'Videos:'} {dailyUsage.videosAccessed}/1
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                        <Play className="w-5 h-5 text-red-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm text-gray-600 dark:text-gray-400 block">
+                          {language === 'ar' ? 'الفيديوهات' : 'Videos'}
+                        </span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">
+                          {dailyUsage.videosAccessed}/1
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">
+                  <Badge variant="outline" className="text-gray-600 border-gray-300">
                     {language === 'ar' ? 'يتم إعادة تعيين الحدود يومياً' : 'Limits reset daily'}
-                  </p>
+                  </Badge>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Content */}
+        {/* Content Grid with improved styling */}
         <div className="container mx-auto px-4 pb-12">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-8">
             
-            {/* Training Resources */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Dumbbell className="w-5 h-5 text-emerald-600" />
+            {/* Training Resources with better styling */}
+            <Card className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white dark:bg-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-2xl text-gray-900 dark:text-white">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <Dumbbell className="w-6 h-6 text-emerald-600" />
+                  </div>
                   {language === 'ar' ? 'التدريبات والأنظمة الغذائية' : 'Training & Diet Plans'}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-4">
                 {trainingResources.map((resource) => (
-                  <div key={resource.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">
+                  <div key={resource.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 dark:text-white mb-1">
                         {language === 'ar' ? resource.title.ar : resource.title.en}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        <Badge className="mr-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className={`${resource.type === 'training' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'} border-0`}>
                           {resource.type === 'training' ? 
                             (language === 'ar' ? 'تدريب' : 'Training') : 
                             (language === 'ar' ? 'نظام غذائي' : 'Diet')
                           }
                         </Badge>
-                        {resource.description && (language === 'ar' ? resource.description.ar : resource.description.en)}
-                      </p>
+                      </div>
+                      {resource.description && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {language === 'ar' ? resource.description.ar : resource.description.en}
+                        </p>
+                      )}
                     </div>
                     <Button 
                       size="sm" 
-                      variant="outline"
+                      variant={dailyUsage.trainingsAccessed >= 5 ? "outline" : "default"}
                       onClick={() => handleResourceAccess('training', resource.pdfUrl)}
                       disabled={dailyUsage.trainingsAccessed >= 5}
+                      className={dailyUsage.trainingsAccessed >= 5 ? "opacity-50" : "bg-emerald-600 hover:bg-emerald-700"}
                     >
                       {dailyUsage.trainingsAccessed >= 5 ? (
                         <AlertCircle className="w-4 h-4 mr-1" />
@@ -419,38 +439,45 @@ const Members: React.FC = () => {
                 ))}
                 
                 {trainingResources.length === 0 && (
-                  <div className="text-center text-gray-500 py-4">
-                    <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>{language === 'ar' ? 'لا توجد موارد متاحة' : 'No resources available'}</p>
+                  <div className="text-center text-gray-500 py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <FileText className="w-8 h-8 opacity-50" />
+                    </div>
+                    <p className="text-lg">{language === 'ar' ? 'لا توجد موارد متاحة' : 'No resources available'}</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            {/* Video Resources */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Play className="w-5 h-5 text-emerald-600" />
+            {/* Video Resources with better styling */}
+            <Card className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white dark:bg-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-2xl text-gray-900 dark:text-white">
+                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <Play className="w-6 h-6 text-red-600" />
+                  </div>
                   {language === 'ar' ? 'فيديوهات تعليمية' : 'Video Tutorials'}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-4">
                 {videoResources.map((video) => (
-                  <div key={video.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">
+                  <div key={video.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900 dark:text-white mb-1">
                         {language === 'ar' ? video.title.ar : video.title.en}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        {video.description && (language === 'ar' ? video.description.ar : video.description.en)}
-                      </p>
+                      {video.description && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {language === 'ar' ? video.description.ar : video.description.en}
+                        </p>
+                      )}
                     </div>
                     <Button 
                       size="sm" 
-                      variant="outline"
+                      variant={dailyUsage.videosAccessed >= 1 ? "outline" : "default"}
                       onClick={() => handleResourceAccess('video', video.videoUrl)}
                       disabled={dailyUsage.videosAccessed >= 1}
+                      className={dailyUsage.videosAccessed >= 1 ? "opacity-50" : "bg-red-600 hover:bg-red-700"}
                     >
                       {dailyUsage.videosAccessed >= 1 ? (
                         <AlertCircle className="w-4 h-4 mr-1" />
@@ -463,58 +490,66 @@ const Members: React.FC = () => {
                 ))}
                 
                 {videoResources.length === 0 && (
-                  <div className="text-center text-gray-500 py-4">
-                    <Play className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>{language === 'ar' ? 'لا توجد فيديوهات متاحة' : 'No videos available'}</p>
+                  <div className="text-center text-gray-500 py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Play className="w-8 h-8 opacity-50" />
+                    </div>
+                    <p className="text-lg">{language === 'ar' ? 'لا توجد فيديوهات متاحة' : 'No videos available'}</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            {/* Progress Tracking */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-emerald-600" />
+            {/* Progress Tracking with better styling */}
+            <Card className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white dark:bg-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-2xl text-gray-900 dark:text-white">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-6 h-6 text-purple-600" />
+                  </div>
                   {language === 'ar' ? 'متابعة التقدم' : 'Progress Tracking'}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="p-3 bg-emerald-50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">{language === 'ar' ? 'الأسبوع الحالي' : 'Current Week'}</span>
-                    <Badge className="bg-emerald-100 text-emerald-800">3/4</Badge>
+              <CardContent className="space-y-4">
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {language === 'ar' ? 'الأسبوع الحالي' : 'Current Week'}
+                    </span>
+                    <Badge className="bg-emerald-100 text-emerald-800 border-0 font-bold">3/4</Badge>
                   </div>
-                  <div className="w-full bg-emerald-200 rounded-full h-2">
-                    <div className="bg-emerald-600 h-2 rounded-full" style={{ width: '75%' }}></div>
+                  <div className="w-full bg-emerald-200 dark:bg-emerald-800 rounded-full h-3">
+                    <div className="bg-emerald-600 h-3 rounded-full transition-all duration-500" style={{ width: '75%' }}></div>
                   </div>
                 </div>
                 
-                <Button className="w-full" variant="outline">
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 font-semibold py-3" variant="default">
                   <FileText className="w-4 h-4 mr-2" />
                   {language === 'ar' ? 'تحديث التقدم' : 'Update Progress'}
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Support */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-emerald-600" />
+            {/* Support with better styling */}
+            <Card className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-white dark:bg-gray-800">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-2xl text-gray-900 dark:text-white">
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-orange-600" />
+                  </div>
                   {language === 'ar' ? 'الدعم والمساعدة' : 'Support & Help'}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full" variant="outline">
+                <Button className="w-full bg-orange-600 hover:bg-orange-700 font-semibold py-3" variant="default">
                   {language === 'ar' ? 'تواصل مع المدرب' : 'Contact Coach'}
                 </Button>
                 
-                <Button className="w-full" variant="outline">
+                <Button className="w-full font-semibold py-3" variant="outline">
                   {language === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'}
                 </Button>
                 
-                <Button className="w-full" variant="outline">
+                <Button className="w-full font-semibold py-3" variant="outline">
                   {language === 'ar' ? 'طلب مراجعة البرنامج' : 'Request Program Review'}
                 </Button>
               </CardContent>
