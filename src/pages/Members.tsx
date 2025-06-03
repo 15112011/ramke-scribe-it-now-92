@@ -399,7 +399,7 @@ const Members: React.FC = () => {
                             (language === 'ar' ? 'نظام غذائي' : 'Diet')
                           }
                         </Badge>
-                        {language === 'ar' ? resource.description.ar : resource.description.en}
+                        {resource.description && (language === 'ar' ? resource.description.ar : resource.description.en)}
                       </p>
                     </div>
                     <Button 
@@ -443,7 +443,7 @@ const Members: React.FC = () => {
                         {language === 'ar' ? video.title.ar : video.title.en}
                       </p>
                       <p className="text-sm text-gray-600">
-                        {language === 'ar' ? video.description.ar : video.description.en}
+                        {video.description && (language === 'ar' ? video.description.ar : video.description.en)}
                       </p>
                     </div>
                     <Button 
