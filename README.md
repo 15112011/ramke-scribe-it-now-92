@@ -59,6 +59,10 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Express.js (Backend)
+- MongoDB (Database)
+- Cloudinary (Image Storage)
+- JWT Authentication
 
 ## How can I deploy this project?
 
@@ -71,3 +75,45 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Backend Setup
+
+### Prerequisites
+- Node.js installed
+- MongoDB installed locally or MongoDB Atlas account
+- Cloudinary account for image storage
+
+### Environment Setup
+1. Copy `.env.example` to `.env`
+2. Fill in your MongoDB connection string
+3. Add your Cloudinary credentials
+4. Set a secure JWT secret
+
+### Running the Application
+```sh
+# Install dependencies
+npm install
+
+# Install backend dependencies
+cd server && npm install && cd ..
+
+# Run both frontend and backend
+npm run dev:full
+
+# Or run separately:
+npm run dev          # Frontend only
+npm run dev:server   # Backend only
+```
+
+### Coach Dashboard Access
+- URL: `/coach`
+- Username: `omar_coach_2024`
+- Password: `SecureCoachPass!2024`
+
+### Features
+- **Subscription Management**: Review and approve/reject subscription requests
+- **Payment Proof Storage**: Secure image storage via Cloudinary
+- **Resource Assignment**: Assign YouTube videos and Google Drive documents to users
+- **Access Control**: Set custom access duration for each user
+- **Daily Usage Limits**: Automatic enforcement of daily resource access limits
+- **Mobile Responsive**: Fully optimized for mobile devices
