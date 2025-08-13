@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { subscriptionStorage } from '@/utils/subscriptionStorage';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { apiClient } from '@/utils/api';
 
 interface SubscriptionData {
   email: string;
@@ -67,37 +68,40 @@ export const SubscriptionFlow: React.FC<SubscriptionFlowProps> = ({
   const handleSubmitApplication = async () => {
     setIsLoading(true);
     
-    // Convert file to base64 for storage
-    let screenshotData = '';
-    if (subscriptionData.paymentScreenshot) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        screenshotData = reader.result as string;
-        
-        // Save to local storage with password
-        const newRequest = subscriptionStorage.addRequest({
-          email: subscriptionData.email,
-          name: subscriptionData.name,
-          phone: subscriptionData.phone,
-          selectedPlan: planName,
-          goals: subscriptionData.goals,
-          paymentScreenshot: screenshotData,
-          planPrice: planPrice
-        });
-        
-        // Set the password for the user
-        subscriptionStorage.setUserPassword(newRequest.id, subscriptionData.password);
-        
-        setCurrentStep('submitted');
-        setIsLoading(false);
-        toast({
-          title: language === 'ar' ? "تم إرسال الطلب!" : "Application Submitted!",
-          description: language === 'ar' 
-            ? "تم إرسال طلبك للمراجعة من قبل المدرب"
-            : "Your application has been sent to the coach for review.",
-        });
-      };
-      reader.readAsDataURL(subscriptionData.paymentScreenshot);
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('email', subscriptionData.email);
+      formData.append('name', subscriptionData.name);
+      formData.append('phone', subscriptionData.phone);
+      formData.append('password', subscriptionData.password);
+      formData.append('selectedPlan', selectedPlan);
+      formData.append('goals', subscriptionData.goals);
+      
+      if (subscriptionData.paymentScreenshot) {
+        formData.append('paymentProof', subscriptionData.paymentScreenshot);
+      }
+
+      // Submit to backend
+      await apiClient.submitSubscription(formData);
+      
+      setCurrentStep('submitted');
+      toast({
+        title: language === 'ar' ? "تم إرسال الطلب!" : "Application Submitted!",
+        description: language === 'ar' 
+          ? "تم إرسال طلبك للمراجعة من قبل المدرب"
+          : "Your application has been sent to the coach for review.",
+      });
+    } catch (error) {
+      toast({
+        title: language === 'ar' ? "خطأ في الإرسال" : "Submission Error",
+        description: language === 'ar' 
+          ? "حدث خطأ أثناء إرسال الطلب"
+          : "An error occurred while submitting your request",
+        variant: "destructive"
+      });
+    }
+    setIsLoading(false);
     }
   };
 

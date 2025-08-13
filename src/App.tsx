@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Subscription from "./pages/Subscription";
 import Members from "./pages/Members";
+import Coach from "./pages/Coach";
 import NotFound from "./pages/NotFound";
 import { AdminProvider } from "./contexts/AdminContext";
 import { SectionsProvider } from "./contexts/SectionsContext";
@@ -29,6 +30,7 @@ const App = () => (
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/subscription" element={<Subscription />} />
                   <Route path="/members" element={<Members />} />
+                  <Route path="/coach" element={<Coach />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
