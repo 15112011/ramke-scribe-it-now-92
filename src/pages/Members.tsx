@@ -8,12 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
-  subscriptionStorage, 
-  TrainingResource, 
-  VideoResource, 
-  DailyUsage 
-} from '@/utils/subscriptionStorage';
-import { 
   Lock, 
   Download, 
   Calendar, 
@@ -28,22 +22,38 @@ import {
   ExternalLink,
   Timer
 } from 'lucide-react';
+import { apiClient } from '@/utils/api';
+
+interface UserResource {
+  videos: Array<{ title: string; url: string; assignedAt: string }>;
+  documents: Array<{ title: string; url: string; type: string; assignedAt: string }>;
+}
+
+interface DailyUsage {
+  date: string;
+  trainingsAccessed: number;
+  videosAccessed: number;
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  name: string;
+  subscription: {
+    plan: string;
+    status: string;
+    endDate?: string;
+  };
+  resources: UserResource;
+  dailyUsage: DailyUsage;
+}
 
 const Members: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [userPlan, setUserPlan] = useState('');
-  const [userExpiry, setUserExpiry] = useState('');
-  const [trainingResources, setTrainingResources] = useState<TrainingResource[]>([]);
-  const [videoResources, setVideoResources] = useState<VideoResource[]>([]);
-  const [dailyUsage, setDailyUsage] = useState<DailyUsage>({
-    email: '',
-    date: '',
-    trainingsAccessed: 0,
-    videosAccessed: 0
-  });
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [canAttemptLogin, setCanAttemptLogin] = useState(true);
   const [remainingTime, setRemainingTime] = useState(0);
   const { language } = useLanguage();
@@ -53,16 +63,11 @@ const Members: React.FC = () => {
   useEffect(() => {
     const savedAuth = localStorage.getItem('memberAuth');
     if (savedAuth) {
-      const authData = JSON.parse(savedAuth);
-      // Verify the session is still valid
-      const authResult = subscriptionStorage.authenticateUser(authData.email, authData.password);
-      if (authResult.success && authResult.user) {
-        setIsAuthorized(true);
+      try {
+        const authData = JSON.parse(savedAuth);
         setEmail(authData.email);
-        setUserPlan(authResult.user.selectedPlan);
-        setUserExpiry(authResult.user.accessExpiryDate || '');
-        loadUserData(authData.email);
-      } else {
+        verifyTokenAndLoadData(authData.token);
+      } catch (error) {
         localStorage.removeItem('memberAuth');
       }
     }
@@ -85,10 +90,16 @@ const Members: React.FC = () => {
     return () => clearInterval(interval);
   }, [remainingTime]);
 
-  const loadUserData = (userEmail: string) => {
-    setTrainingResources(subscriptionStorage.getTrainingResources().filter(r => r.enabled));
-    setVideoResources(subscriptionStorage.getVideoResources().filter(v => v.enabled));
-    setDailyUsage(subscriptionStorage.getDailyUsage(userEmail));
+  const verifyTokenAndLoadData = async (token: string) => {
+    try {
+      apiClient.token = token;
+      const response = await apiClient.getMyResources();
+      setUserData(response.user);
+      setIsAuthorized(true);
+    } catch (error) {
+      localStorage.removeItem('memberAuth');
+      setIsAuthorized(false);
+    }
   };
 
   const handleVerifyAccess = () => {
@@ -116,23 +127,20 @@ const Members: React.FC = () => {
 
     setIsVerifying(true);
 
-    setTimeout(() => {
-      const authResult = subscriptionStorage.authenticateUser(email, password);
-      
-      if (authResult.success && authResult.user) {
+    setTimeout(async () => {
+      try {
+        const response = await apiClient.login(email, password);
+        
         setIsAuthorized(true);
-        setUserPlan(authResult.user.selectedPlan);
-        setUserExpiry(authResult.user.accessExpiryDate || '');
+        setUserData(response.user);
         
         // Save auth state
         localStorage.setItem('memberAuth', JSON.stringify({
           email: email,
-          password: password,
-          plan: authResult.user.selectedPlan,
+          token: response.token,
+          plan: response.user.subscription.plan,
           loginTime: new Date().toISOString()
         }));
-
-        loadUserData(email);
 
         toast({
           title: language === 'ar' ? 'مرحباً بك!' : 'Welcome!',
@@ -140,15 +148,13 @@ const Members: React.FC = () => {
             ? 'تم تسجيل الدخول بنجاح'
             : 'Successfully logged in',
         });
-      } else {
-        // Record failed attempt
-        subscriptionStorage.recordLoginAttempt(email);
+      } catch (error: any) {
         setCanAttemptLogin(false);
         setRemainingTime(60); // 1 minute countdown
         
         toast({
           title: language === 'ar' ? 'فشل تسجيل الدخول' : 'Login Failed',
-          description: authResult.message || (language === 'ar' 
+          description: error.message || (language === 'ar' 
             ? 'بيانات الدخول غير صحيحة أو منتهية الصلاحية'
             : 'Invalid credentials or expired access'),
           variant: 'destructive'
@@ -160,11 +166,11 @@ const Members: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('memberAuth');
+    localStorage.removeItem('authToken');
     setIsAuthorized(false);
     setEmail('');
     setPassword('');
-    setUserPlan('');
-    setUserExpiry('');
+    setUserData(null);
     toast({
       title: language === 'ar' ? 'تم تسجيل الخروج' : 'Logged Out',
       description: language === 'ar' 
@@ -173,45 +179,30 @@ const Members: React.FC = () => {
     });
   };
 
-  const handleResourceAccess = (type: 'training' | 'video', url: string) => {
-    const maxTrainings = 5;
-    const maxVideos = 1;
-
-    if (type === 'training' && dailyUsage.trainingsAccessed >= maxTrainings) {
+  const handleResourceAccess = async (type: 'training' | 'video', url: string) => {
+    try {
+      await apiClient.accessResource(type);
+      
+      // Update local user data
+      const updatedData = await apiClient.getMyResources();
+      setUserData(prev => prev ? { ...prev, dailyUsage: updatedData.dailyUsage } : null);
+      
+      // Open resource
+      window.open(url, '_blank');
+      
+      toast({
+        title: language === 'ar' ? 'تم فتح المورد' : 'Resource Opened',
+        description: language === 'ar' 
+          ? 'تم فتح الرابط في نافذة جديدة'
+          : 'Resource opened in new window',
+      });
+    } catch (error: any) {
       toast({
         title: language === 'ar' ? 'تم الوصول للحد الأقصى' : 'Daily Limit Reached',
-        description: language === 'ar' 
-          ? `يمكنك الوصول إلى ${maxTrainings} تدريبات يومياً فقط`
-          : `You can only access ${maxTrainings} trainings per day`,
+        description: error.message,
         variant: 'destructive'
       });
-      return;
     }
-
-    if (type === 'video' && dailyUsage.videosAccessed >= maxVideos) {
-      toast({
-        title: language === 'ar' ? 'تم الوصول للحد الأقصى' : 'Daily Limit Reached',
-        description: language === 'ar' 
-          ? `يمكنك مشاهدة ${maxVideos} فيديو يومياً فقط`
-          : `You can only watch ${maxVideos} video per day`,
-        variant: 'destructive'
-      });
-      return;
-    }
-
-    // Update usage
-    subscriptionStorage.updateDailyUsage(email, type);
-    setDailyUsage(subscriptionStorage.getDailyUsage(email));
-
-    // Open resource
-    window.open(url, '_blank');
-
-    toast({
-      title: language === 'ar' ? 'تم فتح المورد' : 'Resource Opened',
-      description: language === 'ar' 
-        ? 'تم فتح الرابط في نافذة جديدة'
-        : 'Resource opened in new window',
-    });
   };
 
   // Login page for non-authorized users
@@ -321,13 +312,17 @@ const Members: React.FC = () => {
                   {language === 'ar' ? `أهلاً وسهلاً ${email}` : `Hello ${email}`}
                 </p>
                 <div className="flex gap-3 flex-wrap">
-                  <Badge className="bg-white text-emerald-700 hover:bg-emerald-50 px-4 py-2 text-sm font-semibold">
-                    {language === 'ar' ? `باقة ${userPlan}` : `${userPlan} Plan`}
-                  </Badge>
-                  {userExpiry && (
-                    <Badge variant="outline" className="bg-emerald-500 text-white border-white hover:bg-emerald-400 px-4 py-2 text-sm font-semibold">
-                      {language === 'ar' ? 'تنتهي في:' : 'Expires:'} {new Date(userExpiry).toLocaleDateString()}
-                    </Badge>
+                  {userData && (
+                    <>
+                      <Badge className="bg-white text-emerald-700 hover:bg-emerald-50 px-4 py-2 text-sm font-semibold">
+                        {language === 'ar' ? `باقة ${userData.subscription.plan}` : `${userData.subscription.plan} Plan`}
+                      </Badge>
+                      {userData.subscription.endDate && (
+                        <Badge variant="outline" className="bg-emerald-500 text-white border-white hover:bg-emerald-400 px-4 py-2 text-sm font-semibold">
+                          {language === 'ar' ? 'تنتهي في:' : 'Expires:'} {new Date(userData.subscription.endDate).toLocaleDateString()}
+                        </Badge>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -357,7 +352,7 @@ const Members: React.FC = () => {
                           {language === 'ar' ? 'التدريبات' : 'Trainings'}
                         </span>
                         <span className="text-lg font-bold text-gray-900 dark:text-white">
-                          {dailyUsage.trainingsAccessed}/5
+                          {userData?.dailyUsage.trainingsAccessed || 0}/5
                         </span>
                       </div>
                     </div>
@@ -370,7 +365,7 @@ const Members: React.FC = () => {
                           {language === 'ar' ? 'الفيديوهات' : 'Videos'}
                         </span>
                         <span className="text-lg font-bold text-gray-900 dark:text-white">
-                          {dailyUsage.videosAccessed}/1
+                          {userData?.dailyUsage.videosAccessed || 0}/1
                         </span>
                       </div>
                     </div>
@@ -401,11 +396,11 @@ const Members: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {trainingResources.map((resource) => (
-                  <div key={resource.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                {userData?.resources.documents.map((resource, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900 dark:text-white mb-1">
-                        {language === 'ar' ? resource.title.ar : resource.title.en}
+                        {resource.title}
                       </p>
                       <div className="flex items-center gap-2 mb-2">
                         <Badge className={`${resource.type === 'training' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'} border-0`}>
@@ -415,20 +410,18 @@ const Members: React.FC = () => {
                           }
                         </Badge>
                       </div>
-                      {resource.description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {language === 'ar' ? resource.description.ar : resource.description.en}
-                        </p>
-                      )}
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Assigned: {new Date(resource.assignedAt).toLocaleDateString()}
+                      </p>
                     </div>
                     <Button 
                       size="sm" 
-                      variant={dailyUsage.trainingsAccessed >= 5 ? "outline" : "default"}
-                      onClick={() => handleResourceAccess('training', resource.pdfUrl)}
-                      disabled={dailyUsage.trainingsAccessed >= 5}
-                      className={dailyUsage.trainingsAccessed >= 5 ? "opacity-50" : "bg-emerald-600 hover:bg-emerald-700"}
+                      variant={userData?.dailyUsage.trainingsAccessed >= 5 ? "outline" : "default"}
+                      onClick={() => handleResourceAccess('training', resource.url)}
+                      disabled={userData?.dailyUsage.trainingsAccessed >= 5}
+                      className={userData?.dailyUsage.trainingsAccessed >= 5 ? "opacity-50" : "bg-emerald-600 hover:bg-emerald-700"}
                     >
-                      {dailyUsage.trainingsAccessed >= 5 ? (
+                      {userData?.dailyUsage.trainingsAccessed >= 5 ? (
                         <AlertCircle className="w-4 h-4 mr-1" />
                       ) : (
                         <Download className="w-4 h-4 mr-1" />
@@ -438,7 +431,7 @@ const Members: React.FC = () => {
                   </div>
                 ))}
                 
-                {trainingResources.length === 0 && (
+                {(!userData?.resources.documents || userData.resources.documents.length === 0) && (
                   <div className="text-center text-gray-500 py-8">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <FileText className="w-8 h-8 opacity-50" />
@@ -460,26 +453,24 @@ const Members: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {videoResources.map((video) => (
-                  <div key={video.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                {userData?.resources.videos.map((video, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900 dark:text-white mb-1">
-                        {language === 'ar' ? video.title.ar : video.title.en}
+                        {video.title}
                       </p>
-                      {video.description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {language === 'ar' ? video.description.ar : video.description.en}
-                        </p>
-                      )}
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Assigned: {new Date(video.assignedAt).toLocaleDateString()}
+                      </p>
                     </div>
                     <Button 
                       size="sm" 
-                      variant={dailyUsage.videosAccessed >= 1 ? "outline" : "default"}
-                      onClick={() => handleResourceAccess('video', video.videoUrl)}
-                      disabled={dailyUsage.videosAccessed >= 1}
-                      className={dailyUsage.videosAccessed >= 1 ? "opacity-50" : "bg-red-600 hover:bg-red-700"}
+                      variant={userData?.dailyUsage.videosAccessed >= 1 ? "outline" : "default"}
+                      onClick={() => handleResourceAccess('video', video.url)}
+                      disabled={userData?.dailyUsage.videosAccessed >= 1}
+                      className={userData?.dailyUsage.videosAccessed >= 1 ? "opacity-50" : "bg-red-600 hover:bg-red-700"}
                     >
-                      {dailyUsage.videosAccessed >= 1 ? (
+                      {userData?.dailyUsage.videosAccessed >= 1 ? (
                         <AlertCircle className="w-4 h-4 mr-1" />
                       ) : (
                         <ExternalLink className="w-4 h-4 mr-1" />
@@ -489,7 +480,7 @@ const Members: React.FC = () => {
                   </div>
                 ))}
                 
-                {videoResources.length === 0 && (
+                {(!userData?.resources.videos || userData.resources.videos.length === 0) && (
                   <div className="text-center text-gray-500 py-8">
                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Play className="w-8 h-8 opacity-50" />
